@@ -80,7 +80,8 @@ class LiveKitRoomManager @Inject constructor(
     val batonState: StateFlow<BatonState> = _batonState.asStateFlow()
 
     private val _batonEvents = MutableSharedFlow<BatonSyncMessage>(
-        extraBufferCapacity = 16,
+        extraBufferCapacity = 64,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.SUSPEND,
     )
     val batonEvents = _batonEvents.asSharedFlow()
 
@@ -273,7 +274,7 @@ class LiveKitRoomManager @Inject constructor(
         return remote?.name?.takeIf { it.isNotBlank() } ?: identity
     }
 
-    private fun handleRoomEvent(lkRoom: Room, event: RoomEvent) {
+    private suspend fun handleRoomEvent(lkRoom: Room, event: RoomEvent) {
         when (event) {
             is RoomEvent.Connected -> publishConnected(lkRoom)
             is RoomEvent.Disconnected -> {
@@ -310,7 +311,7 @@ class LiveKitRoomManager @Inject constructor(
             }
             is RoomEvent.DataReceived -> {
                 if (event.topic == BATON_DATA_TOPIC) {
-                    decodeBatonMessage(event.data)?.let { _batonEvents.tryEmit(it) }
+                    decodeBatonMessage(event.data)?.let { _batonEvents.emit(it) }
                 }
             }
             else -> Unit
