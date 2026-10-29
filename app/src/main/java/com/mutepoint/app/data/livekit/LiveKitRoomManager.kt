@@ -292,8 +292,10 @@ class LiveKitRoomManager @Inject constructor(
                 appScope.launch {
                     batonMutex.withLock {
                         val st = batonSyncState
-                        if (st.holder == myIdentity && st.expiresAtEpochMs != null) {
-                            publishBaton(BatonSyncMessage.Grant(st.holder!!, st.expiresAtEpochMs!!))
+                        val holder = st.holder
+                        val expiresAt = st.expiresAtEpochMs
+                        if (holder != null && holder == myIdentity && expiresAt != null) {
+                            publishBaton(BatonSyncMessage.Grant(holder, expiresAt))
                         }
                     }
                 }
