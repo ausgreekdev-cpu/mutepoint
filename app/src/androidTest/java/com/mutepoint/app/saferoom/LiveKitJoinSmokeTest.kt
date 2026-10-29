@@ -43,7 +43,7 @@ class LiveKitJoinSmokeTest {
         waitUntilText("YOU ARE SPEAKING")
 
         // Hold the floor while device B joins, queues and waits for the pass.
-        Thread.sleep(30_000)
+        Thread.sleep(15_000)
 
         composeRule.onNodeWithText("Pass the Baton Early").performClick()
         // B auto-granted the baton — A now sees the remote holder.
