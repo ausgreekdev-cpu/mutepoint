@@ -40,7 +40,8 @@ class BatonSyncReducerTest {
 
     @Test
     fun `pending orders by ts then identity regardless of arrival order`() {
-        var state = BatonSyncState(holder = other, expiresAtEpochMs = 35_000L)
+        val holder = "user-x"
+        var state = BatonSyncState(holder = holder, expiresAtEpochMs = 35_000L)
         state = reducer.onRequest(state, request(other, ts = 3_000L), 5_000L, 30_000L).state
         state = reducer.onRequest(state, request(me, ts = 2_000L), 5_000L, 30_000L).state
         assertEquals(listOf(me, other), state.pending.map { it.identity })

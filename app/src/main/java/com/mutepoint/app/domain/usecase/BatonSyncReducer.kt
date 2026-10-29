@@ -48,19 +48,25 @@ class BatonSyncReducer {
         nowMs: Long,
         turnMs: Long,
     ): BatonSyncResult {
+        if (state.holder == request.identity) {
+            return BatonSyncResult(state)
+        }
         if (state.pending.any { it.batonId == request.batonId }) {
             return BatonSyncResult(state)
         }
         val pending = (state.pending + request).sortedWith(comparator)
-        val next = state.copy(pending = pending)
-        if (next.holder == null && pending.first() == request) {
+        if (state.holder == null && pending.first() == request) {
             val expiresAt = nowMs + turnMs
             return BatonSyncResult(
-                state = next.copy(holder = request.identity, expiresAtEpochMs = expiresAt),
+                state = state.copy(
+                    holder = request.identity,
+                    expiresAtEpochMs = expiresAt,
+                    pending = pending.filterNot { it.batonId == request.batonId },
+                ),
                 commands = listOf(BatonSyncCommand.BroadcastGrant(request.identity, expiresAt)),
             )
         }
-        return BatonSyncResult(next)
+        return BatonSyncResult(state.copy(pending = pending))
     }
 
     fun onCancel(state: BatonSyncState, batonId: String): BatonSyncResult =
