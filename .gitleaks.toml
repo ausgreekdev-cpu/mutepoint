@@ -1,0 +1,16 @@
+# Gitleaks configuration — Mute Point
+# https://github.com/gitleaks/gitleaks
+
+[allowlist]
+  description = "Known safe patterns"
+  paths = [
+    '''app/src/androidTest/.*''',
+    '''app/src/test/.*''',
+    '''tools/token-server/src/index.js''',
+  ]
+
+  # Compose UI strings that look like credentials but are not
+  regexes = [
+    '''decoy_app_name''',
+    '''decoy_note_not_found''',
+  ]
