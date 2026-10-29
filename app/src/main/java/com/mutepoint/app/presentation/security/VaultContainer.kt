@@ -36,6 +36,7 @@ import com.mutepoint.app.R
 fun VaultContainer(
     isUnlocked: Boolean,
     pinError: Boolean,
+    lockoutSeconds: Long,
     onPinSubmit: (String) -> Unit,
     onUnlockAuthenticated: @Composable () -> Unit,
     onPanic: () -> Unit,
@@ -74,19 +75,31 @@ fun VaultContainer(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    val isLockedOut = lockoutSeconds > 0
+
                     OutlinedTextField(
-                        value = pinInput,
+                        value = if (isLockedOut) "" else pinInput,
                         onValueChange = { input ->
-                            pinInput = input
-                            onPinSubmit(input)
+                            if (!isLockedOut) {
+                                pinInput = input
+                                onPinSubmit(input)
+                            }
                         },
-                        label = { Text("Quick Note / Search") },
+                        label = { Text(if (isLockedOut) "Locked" else "Quick Note / Search") },
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
+                        enabled = !isLockedOut,
                         modifier = Modifier.fillMaxWidth(),
                     )
 
-                    if (pinError) {
+                    if (isLockedOut) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Too many attempts. Try again in ${lockoutSeconds}s.",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    } else if (pinError) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = stringResource(R.string.decoy_note_not_found),

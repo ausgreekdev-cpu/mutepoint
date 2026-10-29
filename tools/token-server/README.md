@@ -3,6 +3,11 @@
 Mints short-lived LiveKit join tokens so the API secret never ships in the APK.
 Entry is gated by a shared `ROOM_CODE` (header `X-Room-Code`).
 
+## Prerequisites
+
+1. A LiveKit Cloud project with an API key and secret
+2. A Cloudflare account (free tier is sufficient)
+
 ## Deploy (one-time, ~2 minutes)
 
 ```bash
@@ -16,6 +21,12 @@ npx wrangler secret put LIVEKIT_URL          # paste your LiveKit WebSocket URL 
 npx wrangler secret put ROOM_CODE            # paste a strong random room code (see below)
 
 npx wrangler deploy
+```
+
+Generate a strong room code (run once, store in both `local.properties` and the wrangler secret):
+
+```bash
+openssl rand -base64 12
 ```
 
 `wrangler deploy` prints your URL, e.g. `https://mute-point-token.<account>.workers.dev`.
@@ -45,5 +56,5 @@ LIVEKIT_TOKEN_URL=https://<your-url>.workers.dev/token
 
 ## Rotate the API secret
 
-If the secret was ever pasted in chat/logs: LiveKit Cloud → Settings → Keys →
-regenerate, then `npx wrangler secret put LIVEKIT_API_SECRET` with the new value.
+If the secret is ever exposed: LiveKit Cloud → Settings → Keys → regenerate,
+then `npx wrangler secret put LIVEKIT_API_SECRET` with the new value.

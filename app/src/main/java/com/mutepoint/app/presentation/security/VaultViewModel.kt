@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.mutepoint.app.core.security.RelockDecider
 import com.mutepoint.app.core.security.RelockPolicy
 import com.mutepoint.app.core.security.VaultSecurityStore
+import com.mutepoint.app.core.security.PinResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,9 @@ class VaultViewModel @Inject constructor(
     private val _pinError = MutableStateFlow(false)
     val pinError: StateFlow<Boolean> = _pinError.asStateFlow()
 
+    private val _lockoutSeconds = MutableStateFlow(0L)
+    val lockoutSeconds: StateFlow<Long> = _lockoutSeconds.asStateFlow()
+
     private val _flagSecure = MutableStateFlow(store.flagSecure)
     val flagSecure: StateFlow<Boolean> = _flagSecure.asStateFlow()
 
@@ -34,11 +38,18 @@ class VaultViewModel @Inject constructor(
             _pinError.value = false
             return
         }
-        if (store.verifyPin(pin)) {
-            _isUnlocked.value = true
-            _pinError.value = false
-        } else {
-            _pinError.value = true
+        when (val result = store.verifyPin(pin)) {
+            is PinResult.Valid -> {
+                _isUnlocked.value = true
+                _pinError.value = false
+                _lockoutSeconds.value = 0L
+            }
+            is PinResult.Invalid -> {
+                _pinError.value = true
+            }
+            is PinResult.Locked -> {
+                _lockoutSeconds.value = result.remainingSeconds
+            }
         }
     }
 
@@ -64,7 +75,7 @@ class VaultViewModel @Inject constructor(
     }
 
     fun changePin(currentPin: String, newPin: String): Boolean {
-        if (!store.verifyPin(currentPin)) return false
+        if (store.verifyPin(currentPin) !is PinResult.Valid) return false
         store.changePin(newPin)
         return true
     }

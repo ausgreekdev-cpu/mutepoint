@@ -51,9 +51,11 @@ class MainActivity : ComponentActivity() {
             MutePointTheme {
                 val isUnlocked by vaultViewModel.isUnlocked.collectAsStateWithLifecycle()
                 val pinError by vaultViewModel.pinError.collectAsStateWithLifecycle()
+                val lockoutSeconds by vaultViewModel.lockoutSeconds.collectAsStateWithLifecycle()
                 VaultContainer(
                     isUnlocked = isUnlocked,
                     pinError = pinError,
+                    lockoutSeconds = lockoutSeconds,
                     onPinSubmit = vaultViewModel::submitPin,
                     onPanic = { triggerEmergencyExit(this) },
                     onUnlockAuthenticated = {

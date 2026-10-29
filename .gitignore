@@ -14,4 +14,11 @@ keystore.properties
 keystore/
 *.jks
 *.keystore
+*.key
+secrets.properties
+keystore.properties.bak
+*.pdf
+*.png
+!tools/dashboard/static/
 node_modules/
+package-lock.json

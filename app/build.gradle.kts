@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.androidx.room3)
 }
 
+// Keystore credentials are loaded from keystore.properties (gitignored).
+// See keystore.properties.example for the template.
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
