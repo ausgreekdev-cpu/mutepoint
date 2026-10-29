@@ -59,7 +59,7 @@ class MonitorService : LifecycleService() {
             ACTION_START -> startMonitoring()
             ACTION_STOP -> stopAndKill()
             ACTION_SIMULATE_INTERRUPTION -> handleSimulatedInterruption(intent)
-            else -> stopAndKill()
+            else -> return START_NOT_STICKY
         }
         return START_NOT_STICKY
     }
@@ -212,7 +212,7 @@ class MonitorService : LifecycleService() {
             .setContentTitle(getString(R.string.monitor_notification_title))
             .setContentText(getString(R.string.monitor_notification_text))
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .addAction(0, getString(R.string.monitor_notification_stop), stopIntent)
     }
 

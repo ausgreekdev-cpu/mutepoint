@@ -39,6 +39,10 @@ android {
             useSupportLibrary = true
         }
 
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
+
         buildConfigField("String", "LIVEKIT_URL", "\"${localProp("LIVEKIT_URL", "")}\"")
         buildConfigField("String", "LIVEKIT_TOKEN_URL", "\"${localProp("LIVEKIT_TOKEN_URL", "")}\"")
         buildConfigField("String", "LIVEKIT_ROOM_NAME", "\"${localProp("LIVEKIT_ROOM_NAME", "buddy")}\"")

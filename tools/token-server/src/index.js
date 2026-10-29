@@ -1,17 +1,34 @@
 import { AccessToken } from "livekit-server-sdk";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Room-Code",
-};
+// No CORS headers — this is a mobile app backend, not a browser API.
+// Browser-based requests will be blocked by default.
+
+// Simple in-memory rate limiter (best-effort; Cloudflare Rate Limiting rules
+// are recommended for production). Limits token minting to 10/minute per IP.
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 10;
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { windowStart: now, count: 1 });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+  entry.count++;
+  return true;
+}
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: CORS_HEADERS });
+      return new Response(null, { status: 204 });
     }
 
     if (request.method === "GET" && url.pathname === "/") {
@@ -19,6 +36,10 @@ export default {
     }
 
     if (request.method === "POST" && url.pathname === "/token") {
+      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+      if (!checkRateLimit(ip)) {
+        return json({ error: "rate limited" }, 429);
+      }
       return handleToken(request, env);
     }
 
@@ -68,6 +89,6 @@ async function handleToken(request, env) {
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
   });
 }

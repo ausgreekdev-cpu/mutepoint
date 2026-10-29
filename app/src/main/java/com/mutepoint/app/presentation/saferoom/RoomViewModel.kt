@@ -8,6 +8,7 @@ import com.mutepoint.app.data.livekit.LiveKitStatus
 import com.mutepoint.app.domain.model.BatonState
 import com.mutepoint.app.domain.model.InterruptionEvent
 import com.mutepoint.app.domain.repository.RoomRepository
+import com.mutepoint.app.domain.usecase.BatonSyncReducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -113,10 +114,10 @@ class RoomViewModel @Inject constructor(
 
     private fun grantBatonAndStartTicker() {
         viewModelScope.launch {
-            roomRepository.grantBaton(timeSeconds = TURN_SECONDS)
+            roomRepository.grantBaton(timeSeconds = BatonSyncReducer.TURN_SECONDS)
             tickerJob?.cancel()
             tickerJob = viewModelScope.launch {
-                repeat(TURN_SECONDS) {
+                repeat(BatonSyncReducer.TURN_SECONDS) {
                     delay(1_000L)
                     roomRepository.tick()
                 }
@@ -132,7 +133,7 @@ class RoomViewModel @Inject constructor(
 
     companion object {
         private const val GRANT_DELAY_MS = 2_000L
-        private const val TURN_SECONDS = 30
+        // TURN_SECONDS is defined in BatonSyncReducer.TURN_SECONDS
         private const val BANNER_DURATION_MS = 5_000L
     }
 }

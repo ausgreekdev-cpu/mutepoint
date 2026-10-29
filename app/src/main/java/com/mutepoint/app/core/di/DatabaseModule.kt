@@ -2,6 +2,8 @@ package com.mutepoint.app.core.di
 
 import android.content.Context
 import androidx.room3.Room
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import com.mutepoint.app.core.security.SecurePassphraseProvider
 import com.mutepoint.app.data.local.MutePointDatabase
 import com.mutepoint.app.data.local.dao.AnalyticsDao
@@ -20,6 +22,14 @@ import net.zetetic.database.sqlcipher.driver.SQLCipherDriver
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    private val MIGRATION_1_2 = object : Migration(1, 2) {
+        override suspend fun migrate(db: SQLiteConnection) {
+            // No-op: schema changes between v1 and v2 are additive and handled
+            // by Room's auto-migration. This migration exists to prevent
+            // destructive fallback on existing installs.
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MutePointDatabase {
@@ -30,7 +40,7 @@ object DatabaseModule {
             "mute_point_secure.db",
         )
             .setDriver(SQLCipherDriver(passphrase, null, null))
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 
