@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.androidx.room3)
+    alias(libs.plugins.detekt)
 }
 
 // Keystore credentials are loaded from keystore.properties (gitignored).
@@ -99,6 +100,12 @@ room3 {
     schemaDirectory("$projectDir/schemas")
 }
 
+detekt {
+    config.setFrom(files("${rootProject.projectDir}/detekt.yml"))
+    buildUponDefaultConfig = true
+    allRules = false
+}
+
 dependencies {
     implementation(platform(libs.compose.bom))
 
@@ -144,4 +151,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
     debugImplementation(libs.compose.ui.test.manifest)
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
