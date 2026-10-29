@@ -1,0 +1,9 @@
+name = "mute-point-token"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Secrets (set with `npx wrangler secret put <NAME>`):
+#   LIVEKIT_API_KEY
+#   LIVEKIT_API_SECRET
+#   LIVEKIT_URL          (your LiveKit WebSocket URL, wss://...)
+#   ROOM_CODE            (shared with the app's BuildConfig.LIVEKIT_ROOM_CODE — generate with: openssl rand -base64 12)
