@@ -166,6 +166,7 @@ class MonitorService : LifecycleService() {
 
     override fun onDestroy() {
         recorder.stop()
+        vadEngine.release()
         pipeline?.reset()
         pipeline = null
         batonJob?.cancel()

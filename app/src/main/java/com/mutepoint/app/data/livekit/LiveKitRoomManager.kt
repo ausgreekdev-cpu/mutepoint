@@ -98,7 +98,7 @@ class LiveKitRoomManager @Inject constructor(
             try {
                 val identity = identity()
                 myIdentity = identity
-                val tokenResponse = withContext(Dispatchers.IO) { fetchToken(identity) }
+                val tokenResponse = withContext(Dispatchers.IO) { fetchTokenWithRetry(identity) }
                 val lkRoom = LiveKit.create(appContext)
                 appScope.launch {
                     lkRoom.events.events.collect { event -> handleRoomEvent(lkRoom, event) }
@@ -327,6 +327,21 @@ class LiveKitRoomManager @Inject constructor(
             participantCount = count,
             remoteSpeakers = speakers ?: currentSpeakers,
         )
+    }
+
+    private suspend fun fetchTokenWithRetry(identity: String, maxAttempts: Int = 3): TokenResponse {
+        var lastError: Exception? = null
+        repeat(maxAttempts) { attempt ->
+            try {
+                return fetchToken(identity)
+            } catch (e: Exception) {
+                lastError = e
+                if (attempt < maxAttempts - 1) {
+                    kotlinx.coroutines.delay(1000L * (1 shl attempt))
+                }
+            }
+        }
+        throw lastError ?: IOException("token fetch failed")
     }
 
     private suspend fun fetchToken(identity: String): TokenResponse {

@@ -376,10 +376,15 @@ private fun LiveStatusChip(status: LiveKitStatus) {
             MaterialTheme.colorScheme.surfaceVariant,
             MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        is LiveKitStatus.Disconnected, is LiveKitStatus.Error -> Triple(
+        is LiveKitStatus.Disconnected -> Triple(
             "OFFLINE",
             MaterialTheme.colorScheme.surfaceVariant,
             MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        is LiveKitStatus.Error -> Triple(
+            "ERROR",
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
         )
     }
     Surface(color = container, shape = CircleShape) {
