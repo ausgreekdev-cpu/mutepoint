@@ -50,6 +50,7 @@ android {
         buildConfigField("String", "LIVEKIT_TOKEN_URL", "\"${localProp("LIVEKIT_TOKEN_URL", "")}\"")
         buildConfigField("String", "LIVEKIT_ROOM_NAME", "\"${localProp("LIVEKIT_ROOM_NAME", "buddy")}\"")
         buildConfigField("String", "LIVEKIT_ROOM_CODE", "\"${localProp("LIVEKIT_ROOM_CODE", "")}\"")
+        buildConfigField("String", "SENTRY_DSN", "\"${localProp("SENTRY_DSN", "")}\"")
     }
 
     signingConfigs {
@@ -142,6 +143,9 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+
+    // Crash reporting
+    implementation("io.sentry:sentry-android:7.18.0")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
