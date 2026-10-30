@@ -19,6 +19,11 @@ class VaultViewModel @Inject constructor(
     private val _isUnlocked = MutableStateFlow(false)
     val isUnlocked: StateFlow<Boolean> = _isUnlocked.asStateFlow()
 
+    private val _showOnboarding = MutableStateFlow(store.isFirstRun)
+    val showOnboarding: StateFlow<Boolean> = _showOnboarding.asStateFlow()
+
+    val defaultPin: String? = store.defaultPin
+
     private val _pinError = MutableStateFlow(false)
     val pinError: StateFlow<Boolean> = _pinError.asStateFlow()
 
@@ -57,6 +62,11 @@ class VaultViewModel @Inject constructor(
         _isUnlocked.value = false
         _pinError.value = false
         backgroundedAt = null
+    }
+
+    fun dismissOnboarding() {
+        store.markFirstRunComplete()
+        _showOnboarding.value = false
     }
 
     fun onBackgrounded() {
