@@ -92,6 +92,16 @@ To force a passphrase rotation on a user's device, clear app data (Settings → 
 - Failure counter resets on successful entry
 - Lockout state is persisted in SharedPreferences
 
+### PIN Recovery
+
+There is no automated PIN recovery. If a user forgets their PIN:
+- The app interface remains locked
+- Data is NOT lost — the SQLCipher passphrase is independent of the PIN
+- To recover: clear app data (Settings → Apps → Mute Point → Storage → Clear Data)
+- This wipes the PIN but preserves the database (passphrase is in Android Keystore, not cleared by data wipe)
+
+> ⚠️ Clearing app data resets the PIN to a new random value but the database remains accessible via the Keystore-wrapped passphrase.
+
 ### Stealth / Safety Features
 
 - App icon labeled as "My Notes & Ideas" (decoy launcher)
