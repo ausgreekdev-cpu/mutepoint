@@ -402,11 +402,13 @@ class LiveKitRoomManager @Inject constructor(
         room?.let { r ->
             try {
                 r.localParticipant.setMicrophoneEnabled(false)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                android.util.Log.w("LiveKitRoomManager", "teardown: mic disable failed", e)
             }
             try {
                 r.disconnect()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                android.util.Log.w("LiveKitRoomManager", "teardown: disconnect failed", e)
             }
         }
         room = null

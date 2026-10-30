@@ -46,6 +46,21 @@ jobs:
       - name: Assemble Debug
         run: ./gradlew assembleDebug --stacktrace
 
+      - name: ProGuard Smoke Test
+        run: |
+          mkdir -p keystore
+          keytool -genkeypair -v -keystore keystore/ci-release.jks \
+            -alias ci -keyalg RSA -keysize 2048 -validity 365 \
+            -storepass cipassword -keypass cipassword \
+            -dname "CN=CI, OU=CI, O=CI, L=CI, ST=CI, C=US"
+          cat > keystore.properties <<EOF
+          storeFile=keystore/ci-release.jks
+          storePassword=cipassword
+          keyAlias=ci
+          keyPassword=cipassword
+          EOF
+          ./gradlew assembleRelease --stacktrace
+
       - name: Detekt
         run: ./gradlew detekt --stacktrace
 

@@ -25,10 +25,13 @@ class VaultSecurityStore @Inject constructor(
 
     init {
         if (!prefs.contains(KEY_PIN_HASH)) {
-            val (hash, salt) = PinHasher.create(DEFAULT_PIN)
+            val pin = (1000..9999).random().toString()
+            val (hash, salt) = PinHasher.create(pin)
             prefs.edit {
                 putString(KEY_PIN_HASH, encode(hash))
                 putString(KEY_PIN_SALT, encode(salt))
+                putString(KEY_DEFAULT_PIN, pin)
+                putBoolean(KEY_IS_FIRST_RUN, true)
             }
         }
     }
@@ -106,6 +109,16 @@ class VaultSecurityStore @Inject constructor(
     private fun decode(value: String): ByteArray =
         Base64.decode(value, Base64.NO_WRAP)
 
+    val isFirstRun: Boolean
+        get() = prefs.getBoolean(KEY_IS_FIRST_RUN, false)
+
+    val defaultPin: String?
+        get() = prefs.getString(KEY_DEFAULT_PIN, null)
+
+    fun markFirstRunComplete() {
+        prefs.edit { putBoolean(KEY_IS_FIRST_RUN, false) }
+    }
+
     companion object {
         private const val PREFS_NAME = "vault_security"
         private const val KEY_PIN_HASH = "pin_hash"
@@ -114,7 +127,8 @@ class VaultSecurityStore @Inject constructor(
         private const val KEY_FLAG_SECURE = "flag_secure"
         private const val KEY_FAILED_ATTEMPTS = "failed_attempts"
         private const val KEY_LOCKED_UNTIL = "locked_until"
-        private const val DEFAULT_PIN = "7412"
+        private const val KEY_DEFAULT_PIN = "default_pin"
+        private const val KEY_IS_FIRST_RUN = "is_first_run"
         private const val MAX_FAILED_ATTEMPTS = 5
         private const val MAX_LOCKOUT_SECONDS = 300L
     }
