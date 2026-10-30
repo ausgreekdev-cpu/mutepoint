@@ -19,4 +19,6 @@ interface AnalyticsRepository {
     suspend fun recordInterruption(sessionId: String, event: InterruptionEvent)
 
     suspend fun recentSessions(limit: Int): List<SessionAnalytics>
+
+    suspend fun deleteOlderThan(cutoffMs: Long)
 }

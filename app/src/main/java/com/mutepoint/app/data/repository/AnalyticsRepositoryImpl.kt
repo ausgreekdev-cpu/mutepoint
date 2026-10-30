@@ -76,4 +76,9 @@ class AnalyticsRepositoryImpl @Inject constructor(
             val events = analyticsDao.getEvents(session.id).map { it.toDomain() }
             session.toDomain(events)
         }
+
+    override suspend fun deleteOlderThan(cutoffMs: Long) {
+        analyticsDao.deleteSessionsOlderThan(cutoffMs)
+        analyticsDao.deleteOrphanedEvents()
+    }
 }

@@ -40,4 +40,10 @@ interface AnalyticsDao {
 
     @Insert
     suspend fun insertEvent(entity: InterruptionEventEntity)
+
+    @Query("DELETE FROM meeting_sessions WHERE startedAtMs < :cutoffMs")
+    suspend fun deleteSessionsOlderThan(cutoffMs: Long)
+
+    @Query("DELETE FROM interruption_events WHERE sessionRowId NOT IN (SELECT id FROM meeting_sessions)")
+    suspend fun deleteOrphanedEvents()
 }
