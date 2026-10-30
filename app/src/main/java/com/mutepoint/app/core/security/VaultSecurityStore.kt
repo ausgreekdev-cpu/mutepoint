@@ -16,6 +16,12 @@ sealed class PinResult {
     data class Locked(val remainingSeconds: Long) : PinResult()
 }
 
+/**
+ * Persistent store for vault security settings (PIN, relock policy, screenshot blocking).
+ *
+ * PIN is hashed with salted SHA-256 and stored in SharedPreferences.
+ * The actual database encryption key is managed separately by [SecurePassphraseProvider].
+ */
 @Singleton
 class VaultSecurityStore @Inject constructor(
     @ApplicationContext context: Context,

@@ -11,6 +11,12 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
+/**
+ * Manages the SQLCipher database passphrase.
+ *
+ * The passphrase is a random 32-byte value, encrypted with an Android Keystore AES-256-GCM key
+ * and stored in SharedPreferences. The Keystore key is hardware-backed where available.
+ */
 object SecurePassphraseProvider {
 
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"

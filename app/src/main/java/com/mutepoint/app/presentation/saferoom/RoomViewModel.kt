@@ -47,6 +47,9 @@ class RoomViewModel @Inject constructor(
     private val _lastInterruption = MutableStateFlow<InterruptionEvent?>(null)
     val lastInterruption: StateFlow<InterruptionEvent?> = _lastInterruption.asStateFlow()
 
+    private val _isOffline = MutableStateFlow(false)
+    val isOffline: StateFlow<Boolean> = _isOffline.asStateFlow()
+
     private var tickerJob: Job? = null
     private var bannerClearJob: Job? = null
 
@@ -78,7 +81,18 @@ class RoomViewModel @Inject constructor(
     }
 
     fun joinRoom() {
-        viewModelScope.launch { liveKitRoomManager.join() }
+        viewModelScope.launch {
+            _isOffline.value = false
+            try {
+                liveKitRoomManager.join()
+            } catch (e: Exception) {
+                _isOffline.value = true
+            }
+        }
+    }
+
+    fun clearOffline() {
+        _isOffline.value = false
     }
 
     fun leaveRoom() {

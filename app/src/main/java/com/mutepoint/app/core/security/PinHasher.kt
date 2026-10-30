@@ -7,6 +7,13 @@ import java.security.SecureRandom
  * Salted SHA-256 PIN hashing. The PIN only gates the in-app UI — the SQLCipher
  * passphrase is independently wrapped by AndroidKeystore.
  */
+/**
+ * Salted SHA-256 PIN hashing. The PIN only gates the in-app UI — the SQLCipher
+ * passphrase is independently wrapped by AndroidKeystore.
+ *
+ * Note: SHA-256 is used for UI gating only. For high-security scenarios,
+ * consider PBKDF2 or Argon2. The actual data protection uses SQLCipher + Keystore.
+ */
 object PinHasher {
 
     private const val ALGORITHM = "SHA-256"
