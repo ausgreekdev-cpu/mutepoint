@@ -6,6 +6,7 @@ import com.mutepoint.app.core.automation.engine.WorkflowTriggerListener
 import dagger.hilt.android.HiltAndroidApp
 import io.sentry.android.core.SentryAndroid
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MutePointApp : Application() {

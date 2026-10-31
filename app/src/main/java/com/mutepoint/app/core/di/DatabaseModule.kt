@@ -33,7 +33,7 @@ object DatabaseModule {
 
     private val MIGRATION_2_3 = object : Migration(2, 3) {
         override suspend fun migrate(db: SQLiteConnection) {
-            db.execSQL(
+            val stmt1 = db.prepare(
                 "CREATE TABLE IF NOT EXISTS workflows (" +
                     "id TEXT NOT NULL PRIMARY KEY, " +
                     "name TEXT NOT NULL, " +
@@ -47,7 +47,9 @@ object DatabaseModule {
                     "updatedAt INTEGER NOT NULL" +
                     ")"
             )
-            db.execSQL(
+            stmt1.step()
+            stmt1.close()
+            val stmt2 = db.prepare(
                 "CREATE TABLE IF NOT EXISTS workflow_executions (" +
                     "id TEXT NOT NULL PRIMARY KEY, " +
                     "workflowId TEXT NOT NULL, " +
@@ -57,6 +59,8 @@ object DatabaseModule {
                     "error TEXT" +
                     ")"
             )
+            stmt2.step()
+            stmt2.close()
         }
     }
 

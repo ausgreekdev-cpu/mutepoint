@@ -6,6 +6,7 @@ import com.mutepoint.app.data.local.dao.AnalyticsDao
 import com.mutepoint.app.data.local.dao.CardsDao
 import com.mutepoint.app.data.local.dao.JournalDao
 import com.mutepoint.app.data.local.dao.RealityAnchorDao
+import com.mutepoint.app.data.local.dao.WorkflowDao
 import com.mutepoint.app.data.local.entities.AssertionCardEntity
 import com.mutepoint.app.data.local.entities.InterruptionEventEntity
 import com.mutepoint.app.data.local.entities.JournalEntryEntity

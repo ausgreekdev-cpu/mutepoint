@@ -51,6 +51,10 @@ private class FakeAnalyticsRepository(
 
     override suspend fun recentSessions(limit: Int): List<SessionAnalytics> =
         sessions.value.take(limit)
+
+    override suspend fun deleteOlderThan(cutoffMs: Long) {
+        sessions.value = sessions.value.filter { it.startedAtMs >= cutoffMs }
+    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

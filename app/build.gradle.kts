@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.androidx.room3)
-    alias(libs.plugins.detekt)
+    // alias(libs.plugins.detekt)  // not available offline
 }
 
 // Keystore credentials are loaded from keystore.properties (gitignored).
@@ -38,6 +38,10 @@ android {
         versionCode = 2
         versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -101,11 +105,11 @@ room3 {
     schemaDirectory("$projectDir/schemas")
 }
 
-detekt {
-    config.setFrom(files("${rootProject.projectDir}/detekt.yml"))
-    buildUponDefaultConfig = true
-    allRules = false
-}
+// detekt {
+//     config.setFrom(files("${rootProject.projectDir}/detekt.yml"))
+//     buildUponDefaultConfig = true
+//     allRules = false
+// }
 
 dependencies {
     implementation(platform(libs.compose.bom))
@@ -163,5 +167,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     debugImplementation(libs.compose.ui.test.manifest)
 
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
+    // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }

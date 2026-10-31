@@ -5,6 +5,7 @@ import com.mutepoint.app.core.automation.engine.AppEventBus
 import com.mutepoint.app.core.automation.engine.ConditionEvaluator
 import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.engine.WorkflowEngine
+import com.mutepoint.app.core.automation.engine.WorkflowTriggerListener
 import com.mutepoint.app.core.automation.repository.WorkflowRepository
 import com.mutepoint.app.core.automation.repository.WorkflowRepositoryImpl
 import dagger.Binds
