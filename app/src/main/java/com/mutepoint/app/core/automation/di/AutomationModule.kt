@@ -1,5 +1,7 @@
 package com.mutepoint.app.core.automation.di
 
+import com.mutepoint.app.core.automation.DefaultWorkflows
+import com.mutepoint.app.core.automation.engine.AppEventBus
 import com.mutepoint.app.core.automation.engine.ConditionEvaluator
 import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.engine.WorkflowEngine
@@ -22,6 +24,27 @@ abstract class AutomationModule {
     abstract fun bindWorkflowRepository(impl: WorkflowRepositoryImpl): WorkflowRepository
 
     companion object {
+        @Provides
+        @Singleton
+        fun provideAppEventBus(): AppEventBus = AppEventBus()
+
+        @Provides
+        @Singleton
+        fun provideDefaultWorkflows(
+            workflowRepository: WorkflowRepository,
+        ): DefaultWorkflows = DefaultWorkflows(workflowRepository)
+
+        @Provides
+        @Singleton
+        fun provideWorkflowTriggerListener(
+            appEventBus: AppEventBus,
+            workflowRepository: WorkflowRepository,
+            workflowEngine: WorkflowEngine,
+            triggerScheduler: TriggerScheduler,
+        ): WorkflowTriggerListener = WorkflowTriggerListener(
+            appEventBus, workflowRepository, workflowEngine, triggerScheduler,
+        )
+
         @Provides
         @Singleton
         fun provideConditionEvaluator(): ConditionEvaluator = ConditionEvaluator()
