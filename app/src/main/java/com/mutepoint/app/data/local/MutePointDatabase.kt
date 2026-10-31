@@ -11,6 +11,8 @@ import com.mutepoint.app.data.local.entities.InterruptionEventEntity
 import com.mutepoint.app.data.local.entities.JournalEntryEntity
 import com.mutepoint.app.data.local.entities.MeetingSessionEntity
 import com.mutepoint.app.data.local.entities.RealityAnchorEntity
+import com.mutepoint.app.data.local.entities.WorkflowEntity
+import com.mutepoint.app.data.local.entities.WorkflowExecutionEntity
 
 @Database(
     entities = [
@@ -19,8 +21,10 @@ import com.mutepoint.app.data.local.entities.RealityAnchorEntity
         JournalEntryEntity::class,
         AssertionCardEntity::class,
         RealityAnchorEntity::class,
+        WorkflowEntity::class,
+        WorkflowExecutionEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class MutePointDatabase : RoomDatabase() {
@@ -28,4 +32,5 @@ abstract class MutePointDatabase : RoomDatabase() {
     abstract fun journalDao(): JournalDao
     abstract fun cardsDao(): CardsDao
     abstract fun realityAnchorDao(): RealityAnchorDao
+    abstract fun workflowDao(): WorkflowDao
 }

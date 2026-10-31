@@ -144,6 +144,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
 
+    // WorkManager (for scheduled triggers)
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
     // Crash reporting
     implementation("io.sentry:sentry-android:7.18.0")
 
