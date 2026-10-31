@@ -2,6 +2,8 @@ package com.mutepoint.app.core.automation.di
 
 import com.mutepoint.app.core.automation.DefaultWorkflows
 import com.mutepoint.app.core.automation.engine.AppEventBus
+import com.mutepoint.app.core.automation.engine.ActionHandler
+import com.mutepoint.app.core.automation.engine.ActionHandlerImpl
 import com.mutepoint.app.core.automation.engine.ConditionEvaluator
 import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.engine.WorkflowEngine
@@ -24,6 +26,10 @@ abstract class AutomationModule {
     @Singleton
     abstract fun bindWorkflowRepository(impl: WorkflowRepositoryImpl): WorkflowRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindActionHandler(impl: ActionHandlerImpl): ActionHandler
+
     companion object {
         @Provides
         @Singleton
@@ -42,8 +48,9 @@ abstract class AutomationModule {
             workflowRepository: WorkflowRepository,
             workflowEngine: WorkflowEngine,
             triggerScheduler: TriggerScheduler,
+            actionHandler: ActionHandler,
         ): WorkflowTriggerListener = WorkflowTriggerListener(
-            appEventBus, workflowRepository, workflowEngine, triggerScheduler,
+            appEventBus, workflowRepository, workflowEngine, triggerScheduler, actionHandler,
         )
 
         @Provides
