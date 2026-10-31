@@ -167,5 +167,10 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     debugImplementation(libs.compose.ui.test.manifest)
 
+    // Snapshot testing (Roborazzi)
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.20.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.20.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.20.0")
+
     // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
