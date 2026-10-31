@@ -41,7 +41,7 @@ fun AutomationsScreen(
         topBar = { TopAppBar(title = { Text("Automations") }) },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateWorkflow) {
-                Icon(Icons.Default.Add, contentDescription = "Create workflow")
+                Icon(Icons.Default.Add, contentDescription = "Create new workflow")
             }
         },
     ) { padding ->
@@ -56,7 +56,7 @@ fun AutomationsScreen(
             ) {
                 Icon(
                     Icons.Default.AutoFixHigh,
-                    contentDescription = null,
+                    contentDescription = "Automations icon",
                     modifier = Modifier.padding(16.dp),
                     tint = MaterialTheme.colorScheme.outline,
                 )
