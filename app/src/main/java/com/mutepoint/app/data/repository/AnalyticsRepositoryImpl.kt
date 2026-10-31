@@ -1,5 +1,7 @@
 package com.mutepoint.app.data.repository
 
+import com.mutepoint.app.core.automation.engine.AppEventBus
+import com.mutepoint.app.core.automation.model.AppEvent
 import com.mutepoint.app.data.local.dao.AnalyticsDao
 import com.mutepoint.app.data.local.entities.InterruptionEventEntity
 import com.mutepoint.app.data.local.entities.MeetingSessionEntity
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.mapLatest
 @Singleton
 class AnalyticsRepositoryImpl @Inject constructor(
     private val analyticsDao: AnalyticsDao,
+    private val appEventBus: AppEventBus,
 ) : AnalyticsRepository {
 
     override fun observeSession(sessionId: String): Flow<SessionAnalytics?> =
@@ -46,6 +49,7 @@ class AnalyticsRepositoryImpl @Inject constructor(
     override suspend fun endSession(sessionId: String, endedAtMs: Long) {
         val session = analyticsDao.getSession(sessionId) ?: return
         analyticsDao.updateSession(session.copy(endedAtMs = endedAtMs))
+        appEventBus.emit(AppEvent.SessionEnded(sessionId, session.speakingTimeMs, 0))
     }
 
     override suspend fun recordSpeakingTime(sessionId: String, speakingMillis: Long) {

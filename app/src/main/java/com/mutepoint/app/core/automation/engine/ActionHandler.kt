@@ -19,6 +19,8 @@ interface ActionHandler {
 class ActionHandlerImpl @Inject constructor(
     private val monitorController: MonitorController,
     private val realityAnchorRepository: RealityAnchorRepository,
+    private val workflowRepository: com.mutepoint.app.core.automation.repository.WorkflowRepository,
+    private val workflowEngine: WorkflowEngine,
 ) : ActionHandler {
 
     override suspend fun execute(action: Action) {
@@ -42,8 +44,12 @@ class ActionHandlerImpl @Inject constructor(
                 android.util.Log.d("ActionHandler", "Navigate to: ${action.screen}")
             }
             is Action.RunWorkflow -> {
-                // Would recursively execute another workflow
-                android.util.Log.d("ActionHandler", "Run workflow: ${action.workflowId}")
+                val workflow = workflowRepository.getWorkflow(action.workflowId)
+                if (workflow != null) {
+                    workflowEngine.execute(workflow, com.mutepoint.app.core.automation.model.WorkflowContext()) { nestedAction ->
+                        execute(nestedAction)
+                    }
+                }
             }
         }
     }

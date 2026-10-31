@@ -2,6 +2,8 @@ package com.mutepoint.app.presentation.journal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mutepoint.app.core.automation.engine.AppEventBus
+import com.mutepoint.app.core.automation.model.AppEvent
 import com.mutepoint.app.domain.model.RealityAnchorEntry
 import com.mutepoint.app.domain.repository.RealityAnchorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class RealityJournalViewModel @Inject constructor(
     private val realityAnchorRepository: RealityAnchorRepository,
+    private val appEventBus: AppEventBus,
 ) : ViewModel() {
 
     val entries: StateFlow<List<RealityAnchorEntry>> = realityAnchorRepository.observeEntries()
@@ -24,12 +27,13 @@ class RealityJournalViewModel @Inject constructor(
         val trimmedReality = reality.trim()
         if (trimmedTrigger.isEmpty() || trimmedReality.isEmpty()) return
         viewModelScope.launch {
-            realityAnchorRepository.insertEntry(
+            val id = realityAnchorRepository.insertEntry(
                 RealityAnchorEntry(
                     triggerText = trimmedTrigger,
                     realityText = trimmedReality,
                 ),
             )
+            appEventBus.emit(AppEvent.JournalEntryCreated(id.toString()))
         }
     }
 
