@@ -40,8 +40,7 @@ class ActionHandlerImpl @Inject constructor(
                 android.util.Log.d("ActionHandler", "Notification: ${action.title} - ${action.body}")
             }
             is Action.NavigateTo -> {
-                // Navigation would be triggered via a shared state or event
-                android.util.Log.d("ActionHandler", "Navigate to: ${action.screen}")
+                NavigationBus.navigateTo(action.screen)
             }
             is Action.RunWorkflow -> {
                 val workflow = workflowRepository.getWorkflow(action.workflowId)

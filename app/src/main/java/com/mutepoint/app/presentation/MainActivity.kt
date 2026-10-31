@@ -49,13 +49,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var deepLinkTarget: String? = null
+
     private fun handleDeepLink(intent: android.content.Intent?) {
         val uri = intent?.data ?: return
-        if (uri.scheme == "mutepoint" && uri.host == "room") {
-            // Navigate to Safe Rooms tab — handled by NavGraph via state
-            // For now, just store the room name for later navigation
-            android.util.Log.d("MainActivity", "Deep link: ${uri.path}")
+        if (uri.scheme == "mutepoint") {
+            when (uri.host) {
+                "room" -> deepLinkTarget = "saferoom"
+                "journal" -> deepLinkTarget = "journal"
+                "practice" -> deepLinkTarget = "practice"
+                "insights" -> deepLinkTarget = "insights"
+            }
+            android.util.Log.d("MainActivity", "Deep link target: $deepLinkTarget")
         }
+    }
+
+    fun getDeepLinkTarget(): String? = deepLinkTarget
+
+    fun clearDeepLinkTarget() {
+        deepLinkTarget = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
