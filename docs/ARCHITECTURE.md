@@ -33,6 +33,27 @@ app/
     support/     # Support resources screen
 ```
 
+## Automation Module
+
+### Event Bus
+`AppEventBus` (SharedFlow) connects app events to the workflow engine:
+- `LiveKitRoomManager` → `RoomJoined`/`RoomLeft`
+- `MonitorService` → `InterruptionDetected`/`SessionEnded`
+- `RealityJournalViewModel` → `JournalEntryCreated`
+
+### Workflow Engine
+`WorkflowEngine` evaluates conditions and executes actions:
+- `ConditionEvaluator` — checks all conditions (interruption count, speaking time, time of day, etc.)
+- `ActionHandler` — executes actions (monitoring, journal, notifications, navigation, recursive workflows)
+- `TriggerScheduler` — schedules time-based triggers via WorkManager
+
+### Pre-built Workflows
+4 default workflows created on first launch:
+1. Log Interruptions — auto-journal on session end if interruptions > 0
+2. Practice Reminder — daily 9am notification
+3. Safe Room Auto-Monitor — start monitoring on room join
+4. Session Summary — notification after each session
+
 ## Key Design Decisions
 
 ### Stealth Design
