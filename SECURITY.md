@@ -94,13 +94,24 @@ To force a passphrase rotation on a user's device, clear app data (Settings → 
 
 ### PIN Recovery
 
-There is no automated PIN recovery. If a user forgets their PIN:
-- The app interface remains locked
-- Data is NOT lost — the SQLCipher passphrase is independent of the PIN
-- To recover: clear app data (Settings → Apps → Mute Point → Storage → Clear Data)
-- This wipes the PIN but preserves the database (passphrase is in Android Keystore, not cleared by data wipe)
+**Biometric recovery (if available):**
+- If the device supports biometrics, the user can reset their PIN via fingerprint/face recognition
+- `BiometricHelper` checks availability and authenticates via `BiometricPrompt`
+- On success, `VaultSecurityStore.resetPin()` creates a new PIN and clears lockout state
+
+**Manual recovery:**
+- If biometrics are unavailable, clear app data (Settings → Apps → Mute Point → Storage → Clear Data)
+- This wipes the PIN but preserves the database (passphrase is in Android Keystore)
+- A new random PIN is generated on next launch
 
 > ⚠️ Clearing app data resets the PIN to a new random value but the database remains accessible via the Keystore-wrapped passphrase.
+
+### Data Retention
+
+- Sessions older than the configured retention period are automatically deleted
+- Retention options: 30 days, 90 days, 1 year, or forever
+- Cleanup runs when the user changes the retention setting in Settings
+- `AnalyticsRepository.deleteOlderThan(cutoffMs)` removes old sessions and orphaned events
 
 ### Stealth / Safety Features
 

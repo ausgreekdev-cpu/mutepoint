@@ -10,6 +10,9 @@ import javax.inject.Singleton
 
 /**
  * Executes workflow actions by delegating to the appropriate controllers/repositories.
+ *
+ * Each action type maps to a specific controller or repository call.
+ * Navigation actions use [NavigationBus] for cross-screen communication.
  */
 interface ActionHandler {
     suspend fun execute(action: Action)

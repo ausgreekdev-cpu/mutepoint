@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * Simple navigation event bus for workflow-triggered navigation.
+ *
+ * Workflows can emit navigation requests via [navigateTo]. The NavGraph
+ * collects [navigationEvents] and switches tabs/screens accordingly.
  */
 object NavigationBus {
     private val _navigationEvents = MutableSharedFlow<String>(extraBufferCapacity = 16)
