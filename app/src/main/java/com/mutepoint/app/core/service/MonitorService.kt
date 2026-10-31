@@ -15,6 +15,8 @@ import com.mutepoint.app.R
 import com.mutepoint.app.core.audio.AudioRecorderManager
 import com.mutepoint.app.core.audio.VadConfig
 import com.mutepoint.app.core.audio.VadEngine
+import com.mutepoint.app.core.automation.engine.AppEventBus
+import com.mutepoint.app.core.automation.model.AppEvent
 import com.mutepoint.app.core.di.ApplicationScope
 import com.mutepoint.app.domain.model.BatonState
 import com.mutepoint.app.domain.model.InterruptionEvent
@@ -42,6 +44,8 @@ class MonitorService : LifecycleService() {
     @Inject lateinit var roomRepository: RoomRepository
     @Inject lateinit var analyticsRepository: AnalyticsRepository
     @Inject lateinit var monitorController: MonitorController
+
+    @Inject lateinit var appEventBus: AppEventBus
 
     @Inject @ApplicationScope lateinit var appScope: CoroutineScope
 
@@ -107,6 +111,7 @@ class MonitorService : LifecycleService() {
     private fun handleInterruption(event: InterruptionEvent) {
         monitorController.publishInterruption(event)
         notifyInterruption()
+        appEventBus.emit(AppEvent.InterruptionDetected(event.durationMillis, event.interruptionVolumeDb))
         val sid = sessionId ?: return
         appScope.launch {
             analyticsRepository.recordInterruption(sid, event)
@@ -157,6 +162,7 @@ class MonitorService : LifecycleService() {
                     analyticsRepository.recordSpeakingTime(sid, pendingSpeaking)
                 }
                 analyticsRepository.endSession(sid, System.currentTimeMillis())
+                appEventBus.emit(AppEvent.SessionEnded(sid, pendingSpeaking, 0))
             }
         }
         monitorController.onServiceStopped()

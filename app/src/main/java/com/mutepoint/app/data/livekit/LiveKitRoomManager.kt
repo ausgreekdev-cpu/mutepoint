@@ -3,6 +3,8 @@ package com.mutepoint.app.data.livekit
 import android.content.Context
 import com.mutepoint.app.BuildConfig
 import androidx.core.content.edit
+import com.mutepoint.app.core.automation.engine.AppEventBus
+import com.mutepoint.app.core.automation.model.AppEvent
 import com.mutepoint.app.core.di.ApplicationScope
 import com.mutepoint.app.domain.model.BatonState
 import com.mutepoint.app.domain.usecase.BatonRequest
@@ -57,6 +59,7 @@ data class TokenResponse(
 class LiveKitRoomManager @Inject constructor(
     @ApplicationContext private val appContext: Context,
     @ApplicationScope private val appScope: CoroutineScope,
+    private val appEventBus: AppEventBus,
 ) {
     private val mutex = Mutex()
     private var room: Room? = null
@@ -107,6 +110,7 @@ class LiveKitRoomManager @Inject constructor(
                 lkRoom.connect(tokenResponse.url, tokenResponse.token)
                 room = lkRoom
                 publishConnected(lkRoom)
+                appEventBus.emit(AppEvent.RoomJoined(BuildConfig.LIVEKIT_ROOM_NAME))
                 if (micPublishRequested) {
                     lkRoom.localParticipant.setMicrophoneEnabled(true)
                 }
@@ -399,6 +403,7 @@ class LiveKitRoomManager @Inject constructor(
     }
 
     private suspend fun teardownLocked() {
+        val roomName = BuildConfig.LIVEKIT_ROOM_NAME
         room?.let { r ->
             try {
                 r.localParticipant.setMicrophoneEnabled(false)
@@ -415,5 +420,6 @@ class LiveKitRoomManager @Inject constructor(
         micPublishRequested = false
         _status.value = LiveKitStatus.Disconnected
         resetBatonLocked()
+        appEventBus.emit(AppEvent.RoomLeft(roomName))
     }
 }
