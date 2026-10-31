@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -41,6 +42,8 @@ import com.mutepoint.app.presentation.practice.PracticeScreen
 import com.mutepoint.app.presentation.practice.PracticeViewModel
 import com.mutepoint.app.presentation.saferoom.RoomScreen
 import com.mutepoint.app.presentation.saferoom.RoomViewModel
+import com.mutepoint.app.presentation.automations.AutomationsScreen
+import com.mutepoint.app.presentation.automations.AutomationsViewModel
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.settings.SettingsScreen
 import com.mutepoint.app.presentation.support.SupportScreen
@@ -67,6 +70,9 @@ data object SettingsKey : NavKey
 @Serializable
 data object SupportKey : NavKey
 
+@Serializable
+data object AutomationsKey : NavKey
+
 private data class Tab(
     val key: NavKey,
     val title: String,
@@ -82,6 +88,7 @@ fun MainAppScaffold() {
             Tab(SafeRoomKey, "Safe Rooms", Icons.Default.Groups),
             Tab(InsightsKey, "Insights", Icons.Default.Insights),
             Tab(SupportKey, "Support", Icons.Default.Shield),
+            Tab(AutomationsKey, "Automations", Icons.Default.AutoFixHigh),
         )
     }
 
@@ -92,12 +99,14 @@ fun MainAppScaffold() {
     val safeRoomBackStack = rememberNavBackStack(SafeRoomKey)
     val insightsBackStack = rememberNavBackStack(InsightsKey)
     val supportBackStack = rememberNavBackStack(SupportKey)
+    val automationsBackStack = rememberNavBackStack(AutomationsKey)
 
     val activeBackStack = when (currentTab) {
         PracticeKey -> practiceBackStack
         SafeRoomKey -> safeRoomBackStack
         InsightsKey -> insightsBackStack
         SupportKey -> supportBackStack
+        AutomationsKey -> automationsBackStack
         else -> journalBackStack
     }
 
@@ -185,6 +194,13 @@ fun MainAppScaffold() {
                     entry<SupportKey> {
                         SupportScreen(
                             onOpenSettings = { supportBackStack.add(SettingsKey) },
+                        )
+                    }
+                    entry<AutomationsKey> {
+                        val viewModel: AutomationsViewModel = hiltViewModel()
+                        AutomationsScreen(
+                            viewModel = viewModel,
+                            onCreateWorkflow = { automationsBackStack.add(SettingsKey) },
                         )
                     }
                     entry<SettingsKey> {
