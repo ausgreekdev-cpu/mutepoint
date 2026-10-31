@@ -158,6 +158,9 @@ dependencies {
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
+    // Biometrics
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 
