@@ -8,6 +8,7 @@ import com.mutepoint.app.core.security.SecurePassphraseProvider
 import com.mutepoint.app.data.local.MutePointDatabase
 import com.mutepoint.app.data.local.dao.AnalyticsDao
 import com.mutepoint.app.data.local.dao.CardsDao
+import com.mutepoint.app.data.local.dao.ContactsDao
 import com.mutepoint.app.data.local.dao.JournalDao
 import com.mutepoint.app.data.local.dao.RealityAnchorDao
 import com.mutepoint.app.data.local.dao.WorkflowDao
@@ -64,6 +65,24 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override suspend fun migrate(db: SQLiteConnection) {
+            val stmt = db.prepare(
+                "CREATE TABLE IF NOT EXISTS emergency_contacts (" +
+                    "id TEXT NOT NULL PRIMARY KEY, " +
+                    "name TEXT NOT NULL, " +
+                    "phone TEXT NOT NULL, " +
+                    "relationship TEXT NOT NULL DEFAULT '', " +
+                    "priority INTEGER NOT NULL DEFAULT 0, " +
+                    "isPrimary INTEGER NOT NULL DEFAULT 0, " +
+                    "createdAt INTEGER NOT NULL" +
+                    ")"
+            )
+            stmt.step()
+            stmt.close()
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MutePointDatabase {
@@ -74,7 +93,7 @@ object DatabaseModule {
             "mute_point_secure.db",
         )
             .setDriver(SQLCipherDriver(passphrase, null, null))
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
 
@@ -94,4 +113,8 @@ object DatabaseModule {
     @Provides
     fun provideWorkflowDao(database: MutePointDatabase): WorkflowDao =
         database.workflowDao()
+
+    @Provides
+    fun provideContactsDao(database: MutePointDatabase): ContactsDao =
+        database.contactsDao()
 }
