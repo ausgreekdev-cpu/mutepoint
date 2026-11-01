@@ -1,5 +1,8 @@
 package com.mutepoint.app.presentation.backup
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,10 +34,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun BackupScreen(
     viewModel: BackupViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val status by viewModel.status.collectAsState()
     var showExportDialog by remember { mutableStateOf(false) }
     var showImportDialog by remember { mutableStateOf(false) }
     var passphrase by remember { mutableStateOf("") }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri: Uri? ->
+        uri?.let { viewModel.exportToUri(context, it, passphrase) }
+        showExportDialog = false
+        passphrase = ""
+    }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        uri?.let { viewModel.importFromUri(context, it, passphrase) }
+        showImportDialog = false
+        passphrase = ""
+    }
 
     if (showExportDialog) {
         AlertDialog(
@@ -49,11 +70,9 @@ fun BackupScreen(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.exportData(passphrase)
-                    showExportDialog = false
-                    passphrase = ""
+                    exportLauncher.launch("mutepoint-backup.json")
                 }) {
-                    Text("Export")
+                    Text("Choose File")
                 }
             },
             dismissButton = {
@@ -78,11 +97,9 @@ fun BackupScreen(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.importData(passphrase)
-                    showImportDialog = false
-                    passphrase = ""
+                    importLauncher.launch(arrayOf("application/json"))
                 }) {
-                    Text("Import")
+                    Text("Choose File")
                 }
             },
             dismissButton = {

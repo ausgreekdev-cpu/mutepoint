@@ -1,25 +1,33 @@
 package com.mutepoint.app.core.automation.engine
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.mutepoint.app.core.automation.model.WorkflowContext
+import com.mutepoint.app.core.automation.repository.WorkflowRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-/**
- * WorkManager worker that executes scheduled workflows.
- */
-class WorkflowWorker(
-    context: Context,
-    params: WorkerParameters,
+@HiltWorker
+class WorkflowWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
+    private val workflowRepository: WorkflowRepository,
+    private val workflowEngine: WorkflowEngine,
+    private val actionHandler: ActionHandler,
 ) : CoroutineWorker(context, params) {
 
-    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        // Workflow execution is handled by the engine when the app is running.
-        // For background execution, we'd need to inject the engine via Hilt.
-        // For now, this is a placeholder that logs the trigger.
-        android.util.Log.d("WorkflowWorker", "Scheduled workflow triggered: ${inputData.getString("workflow_id")}")
-        Result.success()
+    override suspend fun doWork(): Result {
+        val workflowId = inputData.getString("workflowId") ?: return Result.failure()
+        val workflow = workflowRepository.getWorkflow(workflowId) ?: return Result.failure()
+        return try {
+            val executed = workflowEngine.execute(workflow, WorkflowContext()) { action ->
+                actionHandler.execute(action)
+            }
+            if (executed) Result.success() else Result.success()
+        } catch (e: Exception) {
+            Result.retry()
+        }
     }
 }
