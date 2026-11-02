@@ -59,14 +59,23 @@ class WorkflowTriggerListener @Inject constructor(
         val context = when (event) {
             is AppEvent.InterruptionDetected -> WorkflowContext(
                 interruptionCount = 1,
-            )
+            ).apply {
+                set("durationMs", event.durationMs)
+                set("db", event.db)
+            }
             is AppEvent.SessionEnded -> WorkflowContext(
                 sessionId = event.sessionId,
                 speakingTimeMs = event.speakingMs,
                 interruptionCount = event.interruptionCount,
-            )
-            is AppEvent.RoomJoined -> WorkflowContext(roomName = event.roomName)
-            else -> WorkflowContext()
+            ).apply {
+                set("sessionId", event.sessionId)
+                set("speakingMs", event.speakingMs)
+                set("interruptionCount", event.interruptionCount)
+            }
+            is AppEvent.RoomJoined -> WorkflowContext(roomName = event.roomName).apply { set("roomName", event.roomName) }
+            is AppEvent.RoomLeft -> WorkflowContext(roomName = event.roomName).apply { set("roomName", event.roomName) }
+            is AppEvent.JournalEntryCreated -> WorkflowContext().apply { set("entryId", event.entryId) }
+            is AppEvent.AppOpened -> WorkflowContext()
         }
 
         for (workflow in matchingWorkflows) {
