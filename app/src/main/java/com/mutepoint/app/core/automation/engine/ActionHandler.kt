@@ -48,27 +48,8 @@ class ActionHandlerImpl @Inject constructor(
             is Action.RunWorkflow -> {
                 val workflow = workflowRepository.getWorkflow(action.workflowId)
                 if (workflow != null) {
-                    val depth = com.mutepoint.app.core.automation.model.WorkflowContext().get<Int>("depth") ?: 0
-                    if (depth >= 3) {
-                        android.util.Log.w("ActionHandler", "Max workflow recursion depth reached")
-                        return@execute
-                    }
-                    val ctx = com.mutepoint.app.core.automation.model.WorkflowContext().apply {
-                        set("depth", depth + 1)
-                    }
-                    workflowEngine.execute(workflow, ctx) { nestedAction ->
-                        if (nestedAction is Action.RunWorkflow) {
-                            // Recursive call with depth tracking
-                            val nestedWorkflow = workflowRepository.getWorkflow(nestedAction.workflowId)
-                            if (nestedWorkflow != null && depth + 1 < 3) {
-                                val nestedCtx = com.mutepoint.app.core.automation.model.WorkflowContext().apply {
-                                    set("depth", depth + 2)
-                                }
-                                workflowEngine.execute(nestedWorkflow, nestedCtx) { deeper -> execute(deeper) }
-                            }
-                        } else {
-                            execute(nestedAction)
-                        }
+                    workflowEngine.execute(workflow, com.mutepoint.app.core.automation.model.WorkflowContext()) { nestedAction ->
+                        execute(nestedAction)
                     }
                 }
             }
