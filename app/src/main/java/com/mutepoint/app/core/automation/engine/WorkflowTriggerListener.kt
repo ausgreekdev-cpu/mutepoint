@@ -3,7 +3,6 @@ package com.mutepoint.app.core.automation.engine
 import com.mutepoint.app.core.automation.model.AppEvent
 import com.mutepoint.app.core.automation.model.Trigger
 import com.mutepoint.app.core.automation.model.Workflow
-import com.mutepoint.app.core.automation.engine.ActionHandler
 import com.mutepoint.app.core.automation.model.WorkflowContext
 import com.mutepoint.app.core.automation.repository.WorkflowRepository
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +21,6 @@ class WorkflowTriggerListener @Inject constructor(
     private val appEventBus: AppEventBus,
     private val workflowRepository: WorkflowRepository,
     private val workflowEngine: WorkflowEngine,
-    private val triggerScheduler: TriggerScheduler,
     private val actionHandler: ActionHandler,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
