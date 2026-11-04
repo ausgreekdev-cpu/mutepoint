@@ -178,7 +178,7 @@ dependencies {
     // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
 
-// deps
-
+    // WorkManager + Hilt
     implementation("androidx.hilt:hilt-work:1.2.0")
     ksp("androidx.hilt:hilt-compiler:1.2.0")
+}
