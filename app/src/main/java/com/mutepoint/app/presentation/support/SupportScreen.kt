@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,6 +59,7 @@ fun SupportScreen(
     onOpenSos: () -> Unit = {},
     onOpenContacts: () -> Unit = {},
     onOpenCheckIn: () -> Unit = {},
+    onOpenFakeCall: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -149,13 +151,26 @@ fun SupportScreen(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = onOpenCheckIn,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Check-in Timer")
+                OutlinedButton(
+                    onClick = onOpenCheckIn,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Check-in")
+                }
+                OutlinedButton(
+                    onClick = onOpenFakeCall,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(Icons.Default.Call, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Fake Call")
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(
