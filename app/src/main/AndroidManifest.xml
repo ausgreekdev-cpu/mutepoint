@@ -56,5 +56,13 @@
             android:name=".core.service.MonitorService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
+
+        <receiver
+            android:name=".core.service.CheckInReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.mutepoint.app.action.CHECK_IN_DUE" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

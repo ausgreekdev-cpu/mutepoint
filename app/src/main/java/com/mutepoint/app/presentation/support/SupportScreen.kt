@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,6 +57,7 @@ fun SupportScreen(
     onOpenSettings: () -> Unit = {},
     onOpenSos: () -> Unit = {},
     onOpenContacts: () -> Unit = {},
+    onOpenCheckIn: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -145,6 +147,15 @@ fun SupportScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Contacts")
                 }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onOpenCheckIn,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Check-in Timer")
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(

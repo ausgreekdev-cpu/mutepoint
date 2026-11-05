@@ -1,6 +1,10 @@
 package com.mutepoint.app.presentation.emergency
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +49,17 @@ fun SosScreen(
     val contactsCount by viewModel.contactsCount.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { permissions ->
+        val smsGranted = permissions[Manifest.permission.SEND_SMS] == true
+        if (smsGranted) {
+            viewModel.sendSos()
+        } else {
+            viewModel.showPermissionError()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -90,7 +106,28 @@ fun SosScreen(
             )
             Spacer(Modifier.height(32.dp))
             Button(
-                onClick = { viewModel.sendSos() },
+                onClick = {
+                    val smsOk = ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.SEND_SMS
+                    ) == PackageManager.PERMISSION_GRANTED
+                    val locOk = ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(
+                            context, Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    if (smsOk) {
+                        viewModel.sendSos()
+                    } else {
+                        permissionLauncher.launch(
+                            arrayOf(
+                                Manifest.permission.SEND_SMS,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                            )
+                        )
+                    }
+                },
                 enabled = contactsCount > 0 && !uiState.isSending,
                 modifier = Modifier
                     .fillMaxWidth()

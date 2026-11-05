@@ -51,6 +51,13 @@ class SosViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(showResult = false)
     }
 
+    fun showPermissionError() {
+        _uiState.value = _uiState.value.copy(
+            lastResult = SosManager.SosResult(0, false, "SMS permission is required to send emergency alerts."),
+            showResult = true,
+        )
+    }
+
     fun getSosIntent() = sosManager.sendSosViaIntent()
 }
 

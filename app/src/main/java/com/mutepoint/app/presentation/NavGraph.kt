@@ -46,6 +46,7 @@ import com.mutepoint.app.presentation.automations.AutomationsScreen
 import com.mutepoint.app.presentation.automations.AutomationsViewModel
 import com.mutepoint.app.presentation.contacts.ContactsScreen
 import com.mutepoint.app.presentation.emergency.SosScreen
+import com.mutepoint.app.presentation.checkin.CheckInScreen
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.settings.SettingsScreen
 import com.mutepoint.app.presentation.support.SupportScreen
@@ -80,6 +81,9 @@ data object ContactsKey : NavKey
 
 @Serializable
 data object SosKey : NavKey
+
+@Serializable
+data object CheckInKey : NavKey
 
 
 private data class Tab(
@@ -205,6 +209,7 @@ fun MainAppScaffold() {
                             onOpenSettings = { supportBackStack.add(SettingsKey) },
                             onOpenSos = { supportBackStack.add(SosKey) },
                             onOpenContacts = { supportBackStack.add(ContactsKey) },
+                            onOpenCheckIn = { supportBackStack.add(CheckInKey) },
                         )
                     }
                     entry<AutomationsKey> {
