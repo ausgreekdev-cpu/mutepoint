@@ -135,6 +135,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.room3.runtime)
     ksp(libs.room3.compiler)
@@ -151,6 +152,9 @@ dependencies {
     // WorkManager (for scheduled triggers)
     implementation("androidx.work:work-runtime-ktx:2.10.0")
 
+    // Location services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // Crash reporting
     implementation("io.sentry:sentry-android:7.18.0")
 
@@ -163,6 +167,8 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation("androidx.test.ext:junit:1.2.1")
 
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)

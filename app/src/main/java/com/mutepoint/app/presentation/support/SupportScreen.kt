@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,6 +54,8 @@ data class CrisisResource(
 @Composable
 fun SupportScreen(
     onOpenSettings: () -> Unit = {},
+    onOpenSos: () -> Unit = {},
+    onOpenContacts: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -115,6 +119,31 @@ fun SupportScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(
+                    onClick = onOpenSos,
+                    modifier = Modifier.weight(1f),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) {
+                    Icon(Icons.Default.Warning, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("SOS")
+                }
+                OutlinedButton(
+                    onClick = onOpenContacts,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(Icons.Default.Contacts, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Contacts")
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

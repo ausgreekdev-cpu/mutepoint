@@ -44,6 +44,7 @@ compose-material-icons-extended = { module = "androidx.compose.material:material
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 androidx-hilt-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "androidxHilt" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHilt" }
 
 room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room3" }
 room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room3" }

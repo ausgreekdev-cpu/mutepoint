@@ -44,6 +44,8 @@ import com.mutepoint.app.presentation.saferoom.RoomScreen
 import com.mutepoint.app.presentation.saferoom.RoomViewModel
 import com.mutepoint.app.presentation.automations.AutomationsScreen
 import com.mutepoint.app.presentation.automations.AutomationsViewModel
+import com.mutepoint.app.presentation.contacts.ContactsScreen
+import com.mutepoint.app.presentation.emergency.SosScreen
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.settings.SettingsScreen
 import com.mutepoint.app.presentation.support.SupportScreen
@@ -72,6 +74,13 @@ data object SupportKey : NavKey
 
 @Serializable
 data object AutomationsKey : NavKey
+
+@Serializable
+data object ContactsKey : NavKey
+
+@Serializable
+data object SosKey : NavKey
+
 
 private data class Tab(
     val key: NavKey,
@@ -194,6 +203,8 @@ fun MainAppScaffold() {
                     entry<SupportKey> {
                         SupportScreen(
                             onOpenSettings = { supportBackStack.add(SettingsKey) },
+                            onOpenSos = { supportBackStack.add(SosKey) },
+                            onOpenContacts = { supportBackStack.add(ContactsKey) },
                         )
                     }
                     entry<AutomationsKey> {

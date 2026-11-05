@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,29 +36,22 @@ class WorkflowTriggerListener @Inject constructor(
 
     private suspend fun handleEvent(event: AppEvent) {
         val eventType = when (event) {
-            is AppEvent.RoomJoined -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.ROOM_JOINED)
-            is AppEvent.RoomLeft -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.ROOM_LEFT)
-            is AppEvent.InterruptionDetected -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.INTERRUPTION_DETECTED)
-            is AppEvent.SessionEnded -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.SESSION_ENDED)
-            is AppEvent.JournalEntryCreated -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.JOURNAL_ENTRY_CREATED)
-            is AppEvent.AppOpened -> Trigger.OnEvent(com.mutepoint.app.core.automation.model.EventType.APP_OPENED)
+            is AppEvent.RoomJoined -> com.mutepoint.app.core.automation.model.EventType.ROOM_JOINED
+            is AppEvent.RoomLeft -> com.mutepoint.app.core.automation.model.EventType.ROOM_LEFT
+            is AppEvent.InterruptionDetected -> com.mutepoint.app.core.automation.model.EventType.INTERRUPTION_DETECTED
+            is AppEvent.SessionEnded -> com.mutepoint.app.core.automation.model.EventType.SESSION_ENDED
+            is AppEvent.JournalEntryCreated -> com.mutepoint.app.core.automation.model.EventType.JOURNAL_ENTRY_CREATED
+            is AppEvent.AppOpened -> com.mutepoint.app.core.automation.model.EventType.APP_OPENED
         }
 
-        val workflows = workflowRepository.observeWorkflows().let { flow ->
-            // Collect current value
-            var current: List<Workflow> = emptyList()
-            flow.collect { current = it }
-            current
-        }
-
+        val workflows = workflowRepository.observeWorkflows().first()
         val matchingWorkflows = workflows.filter { workflow ->
-            workflow.enabled && workflow.trigger == eventType
+            workflow.enabled && workflow.trigger is Trigger.OnEvent &&
+                (workflow.trigger as Trigger.OnEvent).eventType == eventType
         }
 
         val context = when (event) {
-            is AppEvent.InterruptionDetected -> WorkflowContext(
-                interruptionCount = 1,
-            )
+            is AppEvent.InterruptionDetected -> WorkflowContext(interruptionCount = 1)
             is AppEvent.SessionEnded -> WorkflowContext(
                 sessionId = event.sessionId,
                 speakingTimeMs = event.speakingMs,
