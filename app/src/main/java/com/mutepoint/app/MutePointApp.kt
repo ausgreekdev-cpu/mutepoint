@@ -3,6 +3,7 @@ package com.mutepoint.app
 import android.app.Application
 import com.mutepoint.app.core.automation.DefaultWorkflows
 import com.mutepoint.app.core.automation.engine.WorkflowTriggerListener
+import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import dagger.hilt.android.HiltAndroidApp
 import io.sentry.android.core.SentryAndroid
 import javax.inject.Inject
@@ -17,6 +18,9 @@ class MutePointApp : Application() {
     @Inject
     lateinit var defaultWorkflows: DefaultWorkflows
 
+    @Inject
+    lateinit var triggerScheduler: TriggerScheduler
+
     override fun onCreate() {
         super.onCreate()
         runCatching { System.loadLibrary("sqlcipher") }
@@ -30,6 +34,7 @@ class MutePointApp : Application() {
         }
 
         workflowTriggerListener.start()
+        triggerScheduler.start()
 
         // Create default workflows on first launch
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {

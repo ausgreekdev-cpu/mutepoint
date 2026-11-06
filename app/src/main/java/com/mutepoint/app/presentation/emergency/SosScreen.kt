@@ -96,9 +96,9 @@ fun SosScreen(
             Spacer(Modifier.height(8.dp))
             Text(
                 if (contactsCount == 0) {
-                    "No emergency contacts configured. Add contacts first."
+                    "No emergency contacts configured. Add trusted contacts to send SOS alerts with your location."
                 } else {
-                    "$contactsCount emergency contact${if (contactsCount == 1) "" else "s"} will be notified"
+                    "$contactsCount emergency contact${if (contactsCount == 1) "" else "s"} will be notified via SMS"
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.outline,

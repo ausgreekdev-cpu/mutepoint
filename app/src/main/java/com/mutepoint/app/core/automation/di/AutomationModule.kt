@@ -7,6 +7,7 @@ import com.mutepoint.app.core.automation.engine.ActionHandlerImpl
 import com.mutepoint.app.core.automation.engine.ConditionEvaluator
 import com.mutepoint.app.core.automation.engine.WorkflowEngine
 import com.mutepoint.app.core.automation.engine.WorkflowTriggerListener
+import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.repository.WorkflowRepository
 import com.mutepoint.app.core.automation.repository.WorkflowRepositoryImpl
 import dagger.Binds
@@ -60,5 +61,9 @@ abstract class AutomationModule {
         fun provideWorkflowEngine(conditionEvaluator: ConditionEvaluator): WorkflowEngine =
             WorkflowEngine(conditionEvaluator)
 
+        @Provides
+        @Singleton
+        fun provideTriggerScheduler(@ApplicationContext context: android.content.Context): TriggerScheduler =
+            TriggerScheduler(context)
     }
 }
