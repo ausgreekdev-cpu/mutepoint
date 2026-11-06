@@ -48,6 +48,7 @@ import com.mutepoint.app.presentation.contacts.ContactsScreen
 import com.mutepoint.app.presentation.emergency.SosScreen
 import com.mutepoint.app.presentation.checkin.CheckInScreen
 import com.mutepoint.app.presentation.fakecall.FakeCallScreen
+import com.mutepoint.app.presentation.timeline.TimelineScreen
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.settings.SettingsScreen
 import com.mutepoint.app.presentation.support.SupportScreen
@@ -88,6 +89,9 @@ data object CheckInKey : NavKey
 
 @Serializable
 data object FakeCallKey : NavKey
+
+@Serializable
+data object TimelineKey : NavKey
 
 
 private data class Tab(
@@ -224,6 +228,7 @@ fun MainAppScaffold(openSos: Boolean = false) {
                             onOpenContacts = { supportBackStack.add(ContactsKey) },
                             onOpenCheckIn = { supportBackStack.add(CheckInKey) },
                             onOpenFakeCall = { supportBackStack.add(FakeCallKey) },
+                            onOpenTimeline = { supportBackStack.add(TimelineKey) },
                         )
                     }
                     entry<AutomationsKey> {
