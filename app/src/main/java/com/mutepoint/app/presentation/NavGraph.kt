@@ -97,7 +97,7 @@ private data class Tab(
 )
 
 @Composable
-fun MainAppScaffold() {
+fun MainAppScaffold(openSos: Boolean = false) {
     val tabs = remember {
         listOf(
             Tab(JournalKey, "Journal", Icons.Default.Book),
@@ -117,6 +117,15 @@ fun MainAppScaffold() {
     val insightsBackStack = rememberNavBackStack(InsightsKey)
     val supportBackStack = rememberNavBackStack(SupportKey)
     val automationsBackStack = rememberNavBackStack(AutomationsKey)
+
+    LaunchedEffect(openSos) {
+        if (openSos) {
+            currentTab = SupportKey
+            if (supportBackStack.none { it == SosKey }) {
+                supportBackStack.add(SosKey)
+            }
+        }
+    }
 
     val activeBackStack = when (currentTab) {
         PracticeKey -> practiceBackStack

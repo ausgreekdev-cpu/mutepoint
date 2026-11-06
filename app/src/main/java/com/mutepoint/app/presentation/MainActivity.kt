@@ -50,8 +50,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private var deepLinkTarget: String? = null
+    private var openSosOnLaunch: Boolean = false
 
     private fun handleDeepLink(intent: android.content.Intent?) {
+        if (intent?.getBooleanExtra("open_sos", false) == true) {
+            openSosOnLaunch = true
+        }
         val uri = intent?.data ?: return
         if (uri.scheme == "mutepoint") {
             when (uri.host) {
@@ -59,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 "journal" -> deepLinkTarget = "journal"
                 "practice" -> deepLinkTarget = "practice"
                 "insights" -> deepLinkTarget = "insights"
+                "sos" -> openSosOnLaunch = true
             }
             android.util.Log.d("MainActivity", "Deep link target: $deepLinkTarget")
         }
@@ -68,6 +73,18 @@ class MainActivity : ComponentActivity() {
 
     fun clearDeepLinkTarget() {
         deepLinkTarget = null
+    }
+
+    fun consumeOpenSos(): Boolean {
+        val v = openSosOnLaunch
+        openSosOnLaunch = false
+        return v
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,7 +132,7 @@ class MainActivity : ComponentActivity() {
                     onPinSubmit = vaultViewModel::submitPin,
                     onPanic = { triggerEmergencyExit(this) },
                     onUnlockAuthenticated = {
-                        MainAppScaffold()
+                        MainAppScaffold(openSos = consumeOpenSos())
                     },
                 )
 
