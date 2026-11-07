@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -59,13 +60,14 @@ fun CheckInScreen(
             if (state.isActive) {
                 val mins = (state.remainingMs / 60000).toInt()
                 val secs = ((state.remainingMs % 60000) / 1000).toInt()
+                val locale = LocalConfiguration.current.locales[0]
                 Text(
                     "Check-in active",
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    String.format(java.util.Locale.getDefault(), "%02d:%02d remaining", mins, secs),
+                    String.format(locale, "%02d:%02d remaining", mins, secs),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center,
                 )
