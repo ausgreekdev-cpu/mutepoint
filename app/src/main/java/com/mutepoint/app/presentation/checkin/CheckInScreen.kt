@@ -65,7 +65,7 @@ fun CheckInScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    String.format("%02d:%02d remaining", mins, secs),
+                    String.format(java.util.Locale.getDefault(), "%02d:%02d remaining", mins, secs),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center,
                 )
