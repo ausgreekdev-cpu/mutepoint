@@ -328,7 +328,25 @@ class LiveKitRoomManager @Inject constructor(
                     }
                 }
             }
-            is RoomEvent.ParticipantDisconnected -> publishConnected(lkRoom)
+            is RoomEvent.ParticipantDisconnected -> {
+                publishConnected(lkRoom)
+                val disconnectedId = event.participant.identity?.value
+                if (disconnectedId != null) {
+                    appScope.launch {
+                        batonMutex.withLock {
+                            val me = myIdentity ?: return@withLock
+                            if (batonSyncState.holder == disconnectedId) {
+                                val next = batonSyncState.pending.firstOrNull()
+                                val now = System.currentTimeMillis()
+                                val nextExpires = next?.let { now + BatonSyncReducer.TURN_MS }
+                                val result = reducer.onPass(batonSyncState, next?.identity, nextExpires)
+                                applyBatonResultLocked(me, result)
+                                publishBaton(BatonSyncMessage.Pass(next?.identity, nextExpires))
+                            }
+                        }
+                    }
+                }
+            }
             is RoomEvent.ActiveSpeakersChanged -> {
                 val speakers = event.speakers
                     .filter { it != lkRoom.localParticipant }

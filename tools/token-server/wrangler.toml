@@ -2,6 +2,12 @@ name = "mute-point-token"
 main = "src/index.js"
 compatibility_date = "2026-10-01"
 
+# KV namespace for rate limiting (create with: npx wrangler kv namespace create RATE_LIMIT_KV)
+# Then add the binding:
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "<your-kv-namespace-id>"
+
 # Secrets (set with `npx wrangler secret put <NAME>`):
 #   LIVEKIT_API_KEY      (from your LiveKit Cloud project)
 #   LIVEKIT_API_SECRET   (from your LiveKit Cloud project)
