@@ -65,6 +65,9 @@ class LiveKitRoomManager @Inject constructor(
     private var room: Room? = null
     private var micPublishRequested = false
     private var myIdentity: String? = null
+    private var userInitiatedLeave = false
+    private var reconnectJob: Job? = null
+    private var reconnectAttempts = 0
 
     private val batonMutex = Mutex()
     private val reducer = BatonSyncReducer()
@@ -74,6 +77,7 @@ class LiveKitRoomManager @Inject constructor(
 
     private companion object {
         private const val KEY_IDENTITY = "identity"
+        private const val MAX_RECONNECT_ATTEMPTS = 5
     }
 
     private val _status = MutableStateFlow<LiveKitStatus>(LiveKitStatus.Disconnected)
@@ -96,33 +100,51 @@ class LiveKitRoomManager @Inject constructor(
 
     suspend fun join() {
         mutex.withLock {
+            reconnectJob?.cancel()
+            reconnectJob = null
+            reconnectAttempts = 0
+            userInitiatedLeave = false
             val current = _status.value
             if (current is LiveKitStatus.Connecting || current is LiveKitStatus.Connected) return
             _status.value = LiveKitStatus.Connecting
-            try {
-                val identity = identity()
-                myIdentity = identity
-                val tokenResponse = withContext(Dispatchers.IO) { fetchTokenWithRetry(identity) }
-                val lkRoom = LiveKit.create(appContext)
-                appScope.launch {
-                    lkRoom.events.events.collect { event -> handleRoomEvent(lkRoom, event) }
-                }
-                lkRoom.connect(tokenResponse.url, tokenResponse.token)
-                room = lkRoom
-                publishConnected(lkRoom)
-                appEventBus.emit(AppEvent.RoomJoined(BuildConfig.LIVEKIT_ROOM_NAME))
-                if (micPublishRequested) {
-                    lkRoom.localParticipant.setMicrophoneEnabled(true)
-                }
-            } catch (e: Exception) {
-                room = null
-                _status.value = LiveKitStatus.Error(e.message ?: "join failed")
+            connectInternalLocked()
+        }
+    }
+
+    private suspend fun connectInternalLocked() {
+        try {
+            val identity = identity()
+            myIdentity = identity
+            val tokenResponse = withContext(Dispatchers.IO) { fetchTokenWithRetry(identity) }
+            val lkRoom = LiveKit.create(appContext)
+            appScope.launch {
+                lkRoom.events.events.collect { event -> handleRoomEvent(lkRoom, event) }
             }
+            lkRoom.connect(tokenResponse.url, tokenResponse.token)
+            room = lkRoom
+            reconnectAttempts = 0
+            publishConnected(lkRoom)
+            appEventBus.emit(AppEvent.RoomJoined(BuildConfig.LIVEKIT_ROOM_NAME))
+            if (micPublishRequested) {
+                lkRoom.localParticipant.setMicrophoneEnabled(true)
+            }
+        } catch (e: Exception) {
+            room = null
+            _status.value = LiveKitStatus.Error(e.message ?: "join failed")
+            scheduleReconnectIfNeeded()
         }
     }
 
     fun leave() {
-        appScope.launch { mutex.withLock { teardownLocked() } }
+        appScope.launch {
+            mutex.withLock {
+                userInitiatedLeave = true
+                reconnectJob?.cancel()
+                reconnectJob = null
+                reconnectAttempts = 0
+                teardownLocked()
+            }
+        }
     }
 
     fun setMicPublish(enabled: Boolean) {
@@ -285,11 +307,13 @@ class LiveKitRoomManager @Inject constructor(
                 room = null
                 _status.value = LiveKitStatus.Disconnected
                 appScope.launch { resetBatonLocked() }
+                scheduleReconnectIfNeeded()
             }
             is RoomEvent.FailedToConnect -> {
                 room = null
                 _status.value = LiveKitStatus.Error("failed to connect")
                 appScope.launch { resetBatonLocked() }
+                scheduleReconnectIfNeeded()
             }
             is RoomEvent.ParticipantConnected -> {
                 publishConnected(lkRoom)
@@ -399,6 +423,31 @@ class LiveKitRoomManager @Inject constructor(
             batonSyncState = BatonSyncState()
             myPendingRequest = null
             _batonState.value = BatonState.Idle
+        }
+    }
+
+    private fun scheduleReconnectIfNeeded() {
+        appScope.launch {
+            mutex.withLock {
+                if (userInitiatedLeave) return@withLock
+                if (reconnectJob?.isActive == true) return@withLock
+                val attempt = reconnectAttempts
+                if (attempt >= MAX_RECONNECT_ATTEMPTS) {
+                    _status.value = LiveKitStatus.Error("Connection lost. Tap to retry.")
+                    return@withLock
+                }
+                reconnectAttempts = attempt + 1
+                val delayMs = (1000L * (1 shl attempt.coerceAtMost(4))).coerceAtMost(15_000L)
+                _status.value = LiveKitStatus.Connecting
+                reconnectJob = appScope.launch {
+                    delay(delayMs)
+                    mutex.withLock {
+                        if (userInitiatedLeave) return@withLock
+                        if (_status.value is LiveKitStatus.Connected) return@withLock
+                        connectInternalLocked()
+                    }
+                }
+            }
         }
     }
 
