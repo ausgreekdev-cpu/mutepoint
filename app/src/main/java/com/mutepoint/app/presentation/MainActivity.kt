@@ -17,6 +17,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.mutepoint.app.core.ui.theme.MutePointTheme
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.mutepoint.app.presentation.security.VaultContainer
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.security.triggerEmergencyExit
@@ -28,13 +32,59 @@ class MainActivity : ComponentActivity() {
 
     private val vaultViewModel: VaultViewModel by viewModels()
 
-    private fun handleDeepLink(intent: android.content.Intent?) {
-        val uri = intent?.data ?: return
-        if (uri.scheme == "mutepoint" && uri.host == "room") {
-            // Navigate to Safe Rooms tab — handled by NavGraph via state
-            // For now, just store the room name for later navigation
-            android.util.Log.d("MainActivity", "Deep link: ${uri.path}")
+    private fun checkForUpdate() {
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.FLEXIBLE,
+                    this,
+                    100,
+                )
+            }
         }
+    }
+
+    private var deepLinkTarget: String? = null
+    private var openSosOnLaunch: Boolean = false
+
+    private fun handleDeepLink(intent: android.content.Intent?) {
+        if (intent?.getBooleanExtra("open_sos", false) == true) {
+            openSosOnLaunch = true
+        }
+        val uri = intent?.data ?: return
+        if (uri.scheme == "mutepoint") {
+            when (uri.host) {
+                "room" -> deepLinkTarget = "saferoom"
+                "journal" -> deepLinkTarget = "journal"
+                "practice" -> deepLinkTarget = "practice"
+                "insights" -> deepLinkTarget = "insights"
+                "sos" -> openSosOnLaunch = true
+            }
+            android.util.Log.d("MainActivity", "Deep link target: $deepLinkTarget")
+        }
+    }
+
+    fun getDeepLinkTarget(): String? = deepLinkTarget
+
+    fun clearDeepLinkTarget() {
+        deepLinkTarget = null
+    }
+
+    fun consumeOpenSos(): Boolean {
+        val v = openSosOnLaunch
+        openSosOnLaunch = false
+        return v
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +111,9 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // In-app update check
+        checkForUpdate()
+
         // Handle deep links
         handleDeepLink(intent)
 
@@ -79,7 +132,7 @@ class MainActivity : ComponentActivity() {
                     onPinSubmit = vaultViewModel::submitPin,
                     onPanic = { triggerEmergencyExit(this) },
                     onUnlockAuthenticated = {
-                        MainAppScaffold()
+                        MainAppScaffold(openSos = consumeOpenSos())
                     },
                 )
 

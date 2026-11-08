@@ -3,14 +3,44 @@ import { AccessToken } from "livekit-server-sdk";
 // No CORS headers — this is a mobile app backend, not a browser API.
 // Browser-based requests will be blocked by default.
 
-// Simple in-memory rate limiter (best-effort; Cloudflare Rate Limiting rules
-// are recommended for production). Limits token minting to 10/minute per IP.
+// Rate limiting: uses Cloudflare KV (RATE_LIMIT_KV) when bound for durability
+// across isolates; falls back to in-memory (best-effort per isolate).
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 10;
 
-function checkRateLimit(ip) {
+async function checkRateLimit(ip, env) {
   const now = Date.now();
+
+  // Prefer KV if available
+  if (env && env.RATE_LIMIT_KV) {
+    try {
+      const key = `rl:${ip}`;
+      const raw = await env.RATE_LIMIT_KV.get(key);
+      let entry = null;
+      if (raw) {
+        try {
+          entry = JSON.parse(raw);
+        } catch {
+          entry = null;
+        }
+      }
+      if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+        entry = { windowStart: now, count: 1 };
+      } else if (entry.count >= RATE_LIMIT_MAX) {
+        return false;
+      } else {
+        entry.count++;
+      }
+      // KV minimum TTL is 60s
+      await env.RATE_LIMIT_KV.put(key, JSON.stringify(entry), { expirationTtl: 120 });
+      return true;
+    } catch {
+      // Fall through to in-memory
+    }
+  }
+
+  // In-memory fallback
   const entry = rateLimitMap.get(ip);
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
     rateLimitMap.set(ip, { windowStart: now, count: 1 });
@@ -37,7 +67,8 @@ export default {
 
     if (request.method === "POST" && url.pathname === "/token") {
       const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-      if (!checkRateLimit(ip)) {
+      const allowed = await checkRateLimit(ip, env);
+      if (!allowed) {
         return json({ error: "rate limited" }, 429);
       }
       return handleToken(request, env);

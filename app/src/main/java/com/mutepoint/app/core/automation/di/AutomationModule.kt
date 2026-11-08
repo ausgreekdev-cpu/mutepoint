@@ -5,9 +5,9 @@ import com.mutepoint.app.core.automation.engine.AppEventBus
 import com.mutepoint.app.core.automation.engine.ActionHandler
 import com.mutepoint.app.core.automation.engine.ActionHandlerImpl
 import com.mutepoint.app.core.automation.engine.ConditionEvaluator
-import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.engine.WorkflowEngine
 import com.mutepoint.app.core.automation.engine.WorkflowTriggerListener
+import com.mutepoint.app.core.automation.engine.TriggerScheduler
 import com.mutepoint.app.core.automation.repository.WorkflowRepository
 import com.mutepoint.app.core.automation.repository.WorkflowRepositoryImpl
 import dagger.Binds
@@ -47,10 +47,9 @@ abstract class AutomationModule {
             appEventBus: AppEventBus,
             workflowRepository: WorkflowRepository,
             workflowEngine: WorkflowEngine,
-            triggerScheduler: TriggerScheduler,
             actionHandler: ActionHandler,
         ): WorkflowTriggerListener = WorkflowTriggerListener(
-            appEventBus, workflowRepository, workflowEngine, triggerScheduler, actionHandler,
+            appEventBus, workflowRepository, workflowEngine, actionHandler,
         )
 
         @Provides

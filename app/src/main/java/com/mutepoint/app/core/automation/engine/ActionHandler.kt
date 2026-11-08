@@ -10,6 +10,9 @@ import javax.inject.Singleton
 
 /**
  * Executes workflow actions by delegating to the appropriate controllers/repositories.
+ *
+ * Each action type maps to a specific controller or repository call.
+ * Navigation actions use [NavigationBus] for cross-screen communication.
  */
 interface ActionHandler {
     suspend fun execute(action: Action)
@@ -19,6 +22,8 @@ interface ActionHandler {
 class ActionHandlerImpl @Inject constructor(
     private val monitorController: MonitorController,
     private val realityAnchorRepository: RealityAnchorRepository,
+    private val workflowRepository: com.mutepoint.app.core.automation.repository.WorkflowRepository,
+    private val workflowEngine: WorkflowEngine,
 ) : ActionHandler {
 
     override suspend fun execute(action: Action) {
@@ -38,12 +43,15 @@ class ActionHandlerImpl @Inject constructor(
                 android.util.Log.d("ActionHandler", "Notification: ${action.title} - ${action.body}")
             }
             is Action.NavigateTo -> {
-                // Navigation would be triggered via a shared state or event
-                android.util.Log.d("ActionHandler", "Navigate to: ${action.screen}")
+                NavigationBus.navigateTo(action.screen)
             }
             is Action.RunWorkflow -> {
-                // Would recursively execute another workflow
-                android.util.Log.d("ActionHandler", "Run workflow: ${action.workflowId}")
+                val workflow = workflowRepository.getWorkflow(action.workflowId)
+                if (workflow != null) {
+                    workflowEngine.execute(workflow, com.mutepoint.app.core.automation.model.WorkflowContext()) { nestedAction ->
+                        execute(nestedAction)
+                    }
+                }
             }
         }
     }

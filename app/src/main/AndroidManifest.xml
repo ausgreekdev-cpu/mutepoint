@@ -3,11 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Icon lives on the DecoyLauncher alias (stealth design) -->
     <application
@@ -49,5 +58,20 @@
             android:name=".core.service.MonitorService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
+
+        <receiver
+            android:name=".core.service.CheckInReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.mutepoint.app.action.CHECK_IN_DUE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".core.service.FakeCallReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.mutepoint.app.action.FAKE_CALL" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

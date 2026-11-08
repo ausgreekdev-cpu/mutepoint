@@ -87,6 +87,17 @@ class VaultSecurityStore @Inject constructor(
         }
     }
 
+    fun resetPin(newPin: String) {
+        // Reset PIN after biometric verification — clears lockout state too
+        val (hash, salt) = PinHasher.create(newPin)
+        prefs.edit {
+            putString(KEY_PIN_HASH, encode(hash))
+            putString(KEY_PIN_SALT, encode(salt))
+            remove(KEY_FAILED_ATTEMPTS)
+            remove(KEY_LOCKED_UNTIL)
+        }
+    }
+
     val isLocked: Boolean
         get() = System.currentTimeMillis() < prefs.getLong(KEY_LOCKED_UNTIL, 0L)
 

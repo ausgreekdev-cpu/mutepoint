@@ -90,6 +90,15 @@ class VaultViewModel @Inject constructor(
         return true
     }
 
+    fun resetPinViaBiometric(newPin: String) {
+        store.resetPin(newPin)
+        _isUnlocked.value = true
+        _pinError.value = false
+        _lockoutSeconds.value = 0L
+    }
+
+    // Biometric availability is checked in the Activity via BiometricHelper.isAvailable(context)
+
     fun setRelockPolicy(policy: RelockPolicy) {
         store.relockPolicy = policy
         _relockPolicy.value = policy

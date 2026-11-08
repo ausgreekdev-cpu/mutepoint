@@ -18,12 +18,18 @@ class VadEngine @Inject constructor(
     private var ortEnv: OrtEnvironment? = null
     private var ortSession: OrtSession? = null
     private var state: OnnxTensor? = null
+    private val fallbackDetector = VadFallbackDetector()
+    var useFallback: Boolean = false
+        private set
 
     private val sampleRate: Long = config.sampleRateHz.toLong()
     private val frameSize: Int = config.frameSizeSamples
 
     init {
         initOrtEngine()
+        if (ortSession == null) {
+            useFallback = true
+        }
     }
 
     private fun initOrtEngine() {
@@ -43,8 +49,15 @@ class VadEngine @Inject constructor(
     }
 
     override fun processFrame(pcmFloatArray: FloatArray): Float {
-        val env = ortEnv ?: return 0f
-        val session = ortSession ?: return 0f
+        if (useFallback || ortSession == null) {
+            val shorts = ShortArray(pcmFloatArray.size)
+            for (i in pcmFloatArray.indices) {
+                shorts[i] = (pcmFloatArray[i] * 32768f).toInt().toShort()
+            }
+            return if (fallbackDetector.detect(shorts)) config.speechThreshold else 0f
+        }
+        val env = ortEnv ?: run { useFallback = true; return 0f }
+        val session = ortSession ?: run { useFallback = true; return 0f }
         if (pcmFloatArray.size != frameSize) return 0f
 
         val inputTensor = OnnxTensor.createTensor(
@@ -73,6 +86,7 @@ class VadEngine @Inject constructor(
         } catch (e: Exception) {
             inputTensor.close()
             srTensor.close()
+            useFallback = true
             0f
         }
     }

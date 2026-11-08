@@ -44,6 +44,11 @@ import com.mutepoint.app.presentation.saferoom.RoomScreen
 import com.mutepoint.app.presentation.saferoom.RoomViewModel
 import com.mutepoint.app.presentation.automations.AutomationsScreen
 import com.mutepoint.app.presentation.automations.AutomationsViewModel
+import com.mutepoint.app.presentation.contacts.ContactsScreen
+import com.mutepoint.app.presentation.emergency.SosScreen
+import com.mutepoint.app.presentation.checkin.CheckInScreen
+import com.mutepoint.app.presentation.fakecall.FakeCallScreen
+import com.mutepoint.app.presentation.timeline.TimelineScreen
 import com.mutepoint.app.presentation.security.VaultViewModel
 import com.mutepoint.app.presentation.settings.SettingsScreen
 import com.mutepoint.app.presentation.support.SupportScreen
@@ -73,6 +78,22 @@ data object SupportKey : NavKey
 @Serializable
 data object AutomationsKey : NavKey
 
+@Serializable
+data object ContactsKey : NavKey
+
+@Serializable
+data object SosKey : NavKey
+
+@Serializable
+data object CheckInKey : NavKey
+
+@Serializable
+data object FakeCallKey : NavKey
+
+@Serializable
+data object TimelineKey : NavKey
+
+
 private data class Tab(
     val key: NavKey,
     val title: String,
@@ -80,7 +101,7 @@ private data class Tab(
 )
 
 @Composable
-fun MainAppScaffold() {
+fun MainAppScaffold(openSos: Boolean = false) {
     val tabs = remember {
         listOf(
             Tab(JournalKey, "Journal", Icons.Default.Book),
@@ -100,6 +121,15 @@ fun MainAppScaffold() {
     val insightsBackStack = rememberNavBackStack(InsightsKey)
     val supportBackStack = rememberNavBackStack(SupportKey)
     val automationsBackStack = rememberNavBackStack(AutomationsKey)
+
+    LaunchedEffect(openSos) {
+        if (openSos) {
+            currentTab = SupportKey
+            if (supportBackStack.none { it == SosKey }) {
+                supportBackStack.add(SosKey)
+            }
+        }
+    }
 
     val activeBackStack = when (currentTab) {
         PracticeKey -> practiceBackStack
@@ -194,6 +224,11 @@ fun MainAppScaffold() {
                     entry<SupportKey> {
                         SupportScreen(
                             onOpenSettings = { supportBackStack.add(SettingsKey) },
+                            onOpenSos = { supportBackStack.add(SosKey) },
+                            onOpenContacts = { supportBackStack.add(ContactsKey) },
+                            onOpenCheckIn = { supportBackStack.add(CheckInKey) },
+                            onOpenFakeCall = { supportBackStack.add(FakeCallKey) },
+                            onOpenTimeline = { supportBackStack.add(TimelineKey) },
                         )
                     }
                     entry<AutomationsKey> {
