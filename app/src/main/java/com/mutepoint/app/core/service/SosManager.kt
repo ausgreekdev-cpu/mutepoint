@@ -3,6 +3,7 @@ package com.mutepoint.app.core.service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import android.telephony.SmsManager
 import com.mutepoint.app.core.location.LocationManager
 import com.mutepoint.app.domain.repository.ContactsRepository
@@ -66,7 +67,7 @@ class SosManager @Inject constructor(
 
     fun sendSosViaIntent(message: String = "I need help. Emergency."): Intent {
         val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("smsto:")
+            data = "smsto:".toUri()
             putExtra("sms_body", message)
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -75,7 +76,7 @@ class SosManager @Inject constructor(
 
     fun callEmergency(number: String = "911"): Intent {
         val intent = Intent(Intent.ACTION_CALL).apply {
-            data = Uri.parse("tel:$number")
+            data = "tel:$number".toUri()
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         return intent
