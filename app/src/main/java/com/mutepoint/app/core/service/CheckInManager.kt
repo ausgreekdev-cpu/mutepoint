@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.core.content.edit
 import android.os.SystemClock
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class CheckInManager @Inject constructor(
     fun scheduleCheckIn(minutes: Int): Long {
         val dueTime = System.currentTimeMillis() + minutes * 60_000L
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        prefs.edit().putLong(KEY_DUE_TIME, dueTime).putBoolean(KEY_ACTIVE, true).apply()
+        prefs.edit { putLong(KEY_DUE_TIME, dueTime).putBoolean(KEY_ACTIVE, true) }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val intent = Intent(context, CheckInReceiver::class.java).apply {
@@ -56,7 +57,7 @@ class CheckInManager @Inject constructor(
 
     fun cancelCheckIn() {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(KEY_ACTIVE, false).remove(KEY_DUE_TIME).apply()
+        prefs.edit { putBoolean(KEY_ACTIVE, false).remove(KEY_DUE_TIME) }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val intent = Intent(context, CheckInReceiver::class.java).apply {
@@ -94,6 +95,6 @@ class CheckInReceiver : BroadcastReceiver() {
             context.startActivity(launchIntent)
         }
         val prefs = context.getSharedPreferences(CheckInManager.PREFS, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(CheckInManager.KEY_ACTIVE, false).apply()
+        prefs.edit { putBoolean(CheckInManager.KEY_ACTIVE, false) }
     }
 }

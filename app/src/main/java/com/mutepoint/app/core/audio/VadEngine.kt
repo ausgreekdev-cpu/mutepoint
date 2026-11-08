@@ -44,7 +44,7 @@ class VadEngine @Inject constructor(
     override fun resetStates() {
         val env = ortEnv ?: return
         state?.close()
-        val emptyBuffer = FloatArray(STATE_SIZE) { 0f }
+        val emptyBuffer = FloatArray(STATE_SIZE)
         state = OnnxTensor.createTensor(env, FloatBuffer.wrap(emptyBuffer), STATE_SHAPE)
     }
 
