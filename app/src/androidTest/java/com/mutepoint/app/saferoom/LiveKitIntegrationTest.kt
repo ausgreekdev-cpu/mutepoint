@@ -6,6 +6,7 @@ import com.mutepoint.app.data.livekit.LiveKitStatus
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import org.junit.Test
+import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
