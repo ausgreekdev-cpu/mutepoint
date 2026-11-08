@@ -150,10 +150,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // WorkManager (for scheduled triggers)
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
 
     // Location services
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-location:21.4.0")
 
     // Hilt WorkManager integration
     implementation("androidx.hilt:hilt-work:1.2.0")
