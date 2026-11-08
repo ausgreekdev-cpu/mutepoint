@@ -9,26 +9,35 @@ sqlite = "2.7.1"
 sqlcipher = "4.20.0"
 composeBom = "2026.09.00"
 coreKtx = "1.19.1"
-activityCompose = "1.12.3"
+activityCompose = "1.13.0"
 lifecycle = "2.11.0"
-navigation3 = "1.2.0"
+navigation3 = "1.2.1"
 coroutines = "1.11.0"
+biometric = "1.2.0-alpha05"
+appUpdate = "2.1.0"
+roborazzi = "1.78.0"
 workRuntime = "2.12.0"
 playServicesLocation = "21.4.0"
 hiltWork = "1.4.0"
-sentry = "7.18.0"
-robolectric = "4.14.1"
+sentry = "8.63.0"
+robolectric = "4.17"
 workTesting = "2.12.0"
-androidxTestCore = "1.6.1"
+androidxTestCore = "1.7.0"
 serialization = "1.12.0"
 onnxruntime = "1.31.1"
 livekit = "2.30.0"
 junit = "4.13.2"
 androidxTestExtJunit = "1.3.0"
 androidxTestRunner = "1.7.0"
-detekt = "1.23.7"
+detekt = "1.23.8"
 
 [libraries]
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+play-app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
+play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "appUpdate" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-junit-rule = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "workTesting" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }

@@ -163,11 +163,11 @@ dependencies {
     implementation(libs.sentry.android)
 
     // In-app updates
-    implementation("com.google.android.play:app-update:2.1.0")
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    implementation(libs.play.app.update)
+    implementation(libs.play.app.update.ktx)
 
     // Biometrics
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation(libs.androidx.biometric)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -184,9 +184,9 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Snapshot testing (Roborazzi)
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.20.0")
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit.rule)
 
     // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
