@@ -13,6 +13,13 @@ activityCompose = "1.12.3"
 lifecycle = "2.11.0"
 navigation3 = "1.2.0"
 coroutines = "1.11.0"
+workRuntime = "2.12.0"
+playServicesLocation = "21.4.0"
+hiltWork = "1.4.0"
+sentry = "7.18.0"
+robolectric = "4.14.1"
+workTesting = "2.12.0"
+androidxTestCore = "1.6.1"
 serialization = "1.12.0"
 onnxruntime = "1.31.1"
 livekit = "2.30.0"
@@ -22,6 +29,14 @@ androidxTestRunner = "1.7.0"
 detekt = "1.23.7"
 
 [libraries]
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
+androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "workTesting" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltWork" }
+sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry" }
+org-robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
