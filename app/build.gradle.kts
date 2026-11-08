@@ -167,7 +167,7 @@ dependencies {
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     // Biometrics
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation("androidx.biometric:biometric:1.4.0-beta01")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -184,9 +184,9 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Snapshot testing (Roborazzi)
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.20.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.77.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.77.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.77.0")
 
     // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
