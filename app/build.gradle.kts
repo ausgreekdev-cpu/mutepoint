@@ -150,17 +150,17 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // WorkManager (for scheduled triggers)
-    implementation("androidx.work:work-runtime-ktx:2.12.0")
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Location services
-    implementation("com.google.android.gms:play-services-location:21.4.0")
+    implementation(libs.play.services.location)
 
     // Hilt WorkManager integration
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    ksp("androidx.hilt:hilt-compiler:1.2.0")
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
 
     // Crash reporting
-    implementation("io.sentry:sentry-android:7.18.0")
+    implementation(libs.sentry.android)
 
     // In-app updates
     implementation("com.google.android.play:app-update:2.1.0")
@@ -171,11 +171,11 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation("androidx.work:work-testing:2.10.0")
-    testImplementation("androidx.test:core:1.6.1")
-    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.org.robolectric)
     testImplementation(libs.compose.ui.test.junit4)
-    testImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation(libs.androidx.test.ext.junit)
 
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
