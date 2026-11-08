@@ -156,8 +156,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.4.0")
 
     // Hilt WorkManager integration
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    ksp("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.hilt:hilt-work:1.4.0")
+    ksp("androidx.hilt:hilt-compiler:1.4.0")
 
     // Crash reporting
     implementation("io.sentry:sentry-android:7.18.0")
@@ -167,13 +167,13 @@ dependencies {
     implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     // Biometrics
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation("androidx.biometric:biometric:1.4.0-beta01")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation("androidx.work:work-testing:2.10.0")
+    testImplementation("androidx.work:work-testing:2.12.0")
     testImplementation("androidx.test:core:1.6.1")
-    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("org.robolectric:robolectric:4.17")
     testImplementation(libs.compose.ui.test.junit4)
     testImplementation("androidx.test.ext:junit:1.2.1")
 
@@ -184,9 +184,9 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Snapshot testing (Roborazzi)
-    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.20.0")
-    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.20.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.77.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.77.0")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-junit-rule:1.77.0")
 
     // detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
 }
