@@ -2,6 +2,7 @@ package com.mutepoint.app.domain.usecase
 
 import com.mutepoint.app.domain.model.BatonState
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -22,10 +23,6 @@ class BatonSyncReducerEdgeCaseTest {
         state = reducer.onRequest(state, request(me, ts = 3_000L), 1_000L, 30_000L).state
         state = reducer.onRequest(state, request(third, ts = 4_000L), 1_000L, 30_000L).state
 
-        // me has lowest ts → should be granted (if no holder)
-        // But only if holder is null at first request time. Since first request
-        // (other, ts=5000) self-grants because holder was null.
-        // So other becomes holder. me and third queue.
         assertEquals(other, state.holder)
         assertEquals(listOf(me, third), state.pending.map { it.identity })
     }
@@ -104,5 +101,41 @@ class BatonSyncReducerEdgeCaseTest {
     fun `uiStateFor shows idle when no holder and not queued`() {
         val ui = reducer.uiStateFor(BatonSyncState(), me, 5_000L)
         assertEquals(BatonState.Idle, ui)
+    }
+
+    @Test
+    fun `expired holder with empty queue drops to idle`() {
+        val state = BatonSyncState(holder = me, expiresAtEpochMs = 10_000L)
+        val result = reducer.onExpiry(state, me, 11_000L, 30_000L)
+        assertNull(result.state.holder)
+        assertNull(result.state.expiresAtEpochMs)
+        assertTrue(result.state.pending.isEmpty())
+        assertEquals(1, result.commands.size)
+    }
+
+    @Test
+    fun `onGrant from unknown winner clears pending identity and sets holder`() {
+        val state = BatonSyncState(
+            holder = other,
+            expiresAtEpochMs = 35_000L,
+            pending = listOf(request(me), request(third)),
+        )
+        val result = reducer.onGrant(state, "unknown-user", 60_000L)
+        assertEquals("unknown-user", result.state.holder)
+        assertEquals(60_000L, result.state.expiresAtEpochMs)
+        assertEquals(2, result.state.pending.size)
+    }
+
+    @Test
+    fun `onPass from current holder to null drops to idle and keeps pending`() {
+        val state = BatonSyncState(
+            holder = other,
+            expiresAtEpochMs = 35_000L,
+            pending = listOf(request(me)),
+        )
+        val result = reducer.onPass(state, null, null)
+        assertNull(result.state.holder)
+        assertNull(result.state.expiresAtEpochMs)
+        assertEquals(1, result.state.pending.size)
     }
 }
